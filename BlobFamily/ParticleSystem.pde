@@ -26,7 +26,20 @@ class ParticleSystem
   void accumulate() {
     for (int i = 0; i < num; i++) {
       // Apply gravity if enabled
-      if (GRAVITY) blob[i].force.add(PVector.mult(new PVector(0.0, 9.8), blob[i].mass));
+      if (GRAVITY) blob[i].force.add(PVector.mult(new PVector(0.0, 100.0), blob[i].mass));
+      
+      if (keys[0]) { // Up
+        blob[i].force.add(new PVector(0.0, -60.0));
+      }
+      if (keys[1]) { // Left
+        blob[i].force.add(new PVector(-60.0, 0.0));
+      }
+      if (keys[2]) { // Down
+        blob[i].force.add(new PVector(0.0, 200.0));
+      }
+      if (keys[3]) { // Right
+        blob[i].force.add(new PVector(60.0, 0.0));
+      }
       
       // Iterate through all connected constraints
       int segments = blob[i].constraints.size();
@@ -56,6 +69,7 @@ class ParticleSystem
 
   void render() {
     for (int i = 0; i < num; i++) {
+      stroke(0, 0, 0);
       ellipse(blob[i].pos.x, blob[i].pos.y, blob[i].mass*10, blob[i].mass*10);
       // Iterate through all connected constraints
       int segments = blob[i].constraints.size();

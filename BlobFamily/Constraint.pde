@@ -5,9 +5,9 @@ class Constraint
   int type;
   
   // For semi-rigid constraint
-  float min;
-  float max;
-  float mid; // Midpoint between self and neighbor
+  float min; // Compressed length
+  float max; // Stretched length
+  float mid; // Relaxed length
   float force;
   
   Constraint() {}
@@ -15,9 +15,9 @@ class Constraint
   void initSemiRigid(Particle pt, float mn, float mx, float m, float cforce) {
     neighbor = pt;
     type = 2;
-    min = mn; // Compressed length
-    max = mx; // Stretched length
-    mid = m; // Relaxed length
+    min = mn;
+    max = mx;
+    mid = m;
     force = cforce;
   }
 
@@ -44,10 +44,10 @@ class Constraint
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
     // If points are the same
     if (it2me.mag() < EPSILON) it2me.set(0.0, 0.0, 0.0);
-    // Vector from neighbor to midpoint
+    // Force vector from neighbor
     it2me.normalize();
     PVector midpt = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
-    // Vector from self to midpoint
+    // Force vector towards rest length
     PVector me2mid = PVector.sub(midpt, p.pos);
     
     me2mid.mult(force); // Apply spring force

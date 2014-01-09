@@ -9,14 +9,15 @@ int PT_COLLISION = 3; // World-Point collision
 int LN_COLLISION = 4; // World-Line collision
 boolean GRAVITY = true; // Toggle gravity
 
-PVector gravity = new PVector(0, 9.8, 0);
 ParticleSystem v;
+
+boolean[] keys = new boolean[4]; // Check key press
 
 void setup()
 {
   size(800, 500);
   background(255, 255, 255);
-  v = createVerletBlob(10, width/2, height/2, 100, 180, 220, 10);
+  v = createVerletBlob(20, width/2, height/2, 20, 50, 80, 20);
 }
 
 void draw()
@@ -60,3 +61,20 @@ ParticleSystem createVerletBlob(int segments, float x, float y, float min, float
 PVector vmin(PVector v1, PVector v2) { return new PVector(min(v1.x, v2.x), min(v1.y, v2.y), min(v1.z, v2.z)); }
 PVector vmax(PVector v1, PVector v2) { return new PVector(max(v1.x, v2.x), max(v1.y, v2.y), max(v1.z, v2.z)); }
 float dist2(PVector v1, PVector v2) { return ((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y) + (v1.z - v2.z)*(v1.z - v2.z)); }
+
+void keyPressed() {
+         if (key == 'w' || (key == CODED && keyCode == UP)) keys[0] = true;
+    else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = true;
+    else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = true;
+    else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = true;
+  
+    if (key == ' ') v = createVerletBlob(20, width/2, height/2, 20, 50, 80, 20);
+}
+
+void keyReleased() {
+         if (key == 'w' || (key == CODED && keyCode == UP)) keys[0] = false;
+    else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = false;
+    else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = false;
+    else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = false;
+}
+
