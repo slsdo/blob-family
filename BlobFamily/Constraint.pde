@@ -75,6 +75,5 @@ class Constraint
       p.pos.set(PVector.add(midpt, PVector.mult(it2me, 0.5)));
       neighbor.pos.set(PVector.sub(midpt, PVector.mult(it2me, 0.5)));
     }
-    p.pos = vmin(vmax(p.pos, new PVector(0.0, 0.0, 0.0)), new PVector(float(width), float(height), 0.0));
   }
 }

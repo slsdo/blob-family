@@ -1,9 +1,9 @@
 
-class Environment
+class Level
 {
   Wall[] walls;
   
-  Environment() {}
+  Level() {}
   
   void initWallSimple() {
     walls = new Wall[4];
@@ -19,7 +19,6 @@ class Environment
   
   void render() {
     fill(#C5AD87);
-    noStroke();
     for (int i = 0; i < walls.length; i++) {
       rect(walls[i].x1, walls[i].y1, walls[i].x2 - walls[i].x1, walls[i].y2 - walls[i].y1);
     }

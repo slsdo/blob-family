@@ -22,6 +22,7 @@ class ParticleSystem
     accumulate(); // Force Accumulator
     integrate(); // Verlet Integration
     constraints(); // Satisfy Constraints
+    collision(); // Collision Detection
   }
 
   void accumulate() {
@@ -29,7 +30,7 @@ class ParticleSystem
       blob[i].force.set(0.0, 0.0);
       
       // Apply gravity if enabled
-      if (GRAVITY) blob[i].force.add(PVector.mult(Gn, blob[i].mass));
+      if (ENABLE_GRAVITY) blob[i].force.add(PVector.mult(Gn, blob[i].mass));
 
       if (keys[0]) { blob[i].force.add(new PVector(0.0, -60.0)); } // Up
       if (keys[1]) { blob[i].force.add(new PVector(-60.0, 0.0)); } // Left
@@ -67,14 +68,18 @@ class ParticleSystem
           Constraint c = (Constraint) blob[i].constraints.get(j);
           c.satisfyConstraints(blob[i]);
         }
-  
-        // Project points outside of obstacle during border collision
-        blob[i].pos = vmin(vmax(blob[i].pos, new PVector(0.0, 0.0, 0.0)), new PVector(float(width), float(height), 0.0));
       }
     }
     
     //blob[0].pos.set(blob[0].pos0.x, blob[0].pos0.y); // lock particle 0
     //blob[1].pos.set(blob[1].pos.x, blob[1].pos0.y); // lock particle 1
+  }
+  
+  void collision() {
+    for (int i = 0; i < blob.length; i++) {
+      // Project points outside of obstacle during border collision
+      worldBoundCollision(blob[i]);
+    }
   }
 
   void render() {
