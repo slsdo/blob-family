@@ -8,17 +8,17 @@ class Constraint
   float min; // Compressed length
   float max; // Stretched length
   float mid; // Relaxed length
-  float force;
+  float kspring; // Spring elasticity
   
   Constraint() {}
   
-  void initSemiRigid(Particle pt, float mn, float mx, float m, float cforce) {
+  void initSemiRigid(Particle pt, float mn, float mx, float m, float ks) {
     neighbor = pt;
     type = 2;
     min = mn;
     max = mx;
     mid = m;
-    force = cforce;
+    kspring = ks;
   }
 
   PVector accumulateForce(Particle p) {
@@ -40,40 +40,41 @@ class Constraint
   }
   
   PVector accumulateSemiRigid(Particle p) {
+    // Obeys Hook's law: f = k * (x - x0)
     // Vector from neighbor to self
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
     // If points are the same
     if (it2me.mag() < EPSILON) it2me.set(0.0, 0.0, 0.0);
-    // Force vector from neighbor
+    // Vector from neighbor to rest position
     it2me.normalize();
     PVector midpt = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
-    // Force vector towards rest length
+    // Vector from current postition to rest position
     PVector me2mid = PVector.sub(midpt, p.pos);
     
-    me2mid.mult(force); // Apply spring force
+    me2mid.mult(kspring); // Apply spring force
     return me2mid;
   }
   
   void satisfySemiRigid(Particle p) {
     // Vector from neighbor to self
-    PVector it2me = PVector.sub(p.pos, neighbor.pos);
-    // Find midpoint
-    PVector midpt = PVector.mult(PVector.add(p.pos, neighbor.pos), 0.5);
+    PVector it2me = PVector.sub(p.pos, neighbor.pos); 
     // If points are the same
     if (it2me.mag() == 0.0) it2me.set(1.0, 0.0, 0.0);
-    // Radius of particle
+    // Length of spring
     float radius = it2me.mag();
     // Constraint to min/max
-    if (radius < min) radius = min;
-    if (radius > max) radius = max;
-    // Scale to required radius
-    it2me.normalize();
-    it2me = PVector.mult(it2me, radius);
-    
-    // Apply constraint
-    p.pos.set(PVector.add(midpt, PVector.mult(it2me, 0.5)));
-    neighbor.pos.set(PVector.sub(midpt, PVector.mult(it2me, 0.5)));
-    
+    if (radius < min || radius > max) {
+      if (radius < min) radius = min;
+      if (radius > max) radius = max;
+      // Scale to length
+      it2me.normalize();
+      it2me = PVector.mult(it2me, radius);
+      // Find midpoint
+      PVector midpt = PVector.mult(PVector.add(p.pos, neighbor.pos), 0.5);
+      // Apply constraint
+      p.pos.set(PVector.add(midpt, PVector.mult(it2me, 0.5)));
+      neighbor.pos.set(PVector.sub(midpt, PVector.mult(it2me, 0.5)));
+    }
     p.pos = vmin(vmax(p.pos, new PVector(0.0, 0.0, 0.0)), new PVector(float(width), float(height), 0.0));
   }
 }

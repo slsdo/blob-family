@@ -2,18 +2,19 @@
 class ParticleSystem
 {
   Particle[] blob; // Array of VerletParticle
+  float mass; // Total mass
   float timestep; // Time step
-  int num;
   
   // Initialize system of particles
-  ParticleSystem(int n, float t) {
+  ParticleSystem(int n, float m, float t) {
     blob = new Particle[n];
+    mass = 0.0;
     // Initialize array
     for (int i = 0; i < n; i++) {
-      blob[i] = new Particle();
+      blob[i] = new Particle(m);
+      mass += m;
     }
     timestep = t;
-    num = n;
   }
   
   // Step through time iteration
@@ -24,18 +25,20 @@ class ParticleSystem
   }
 
   void accumulate() {
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < blob.length; i++) {
+      blob[i].force.set(0.0, 0.0);
+      
       // Apply gravity if enabled
-      if (GRAVITY) blob[i].force.add(PVector.mult(new PVector(0.0, 100.0), blob[i].mass));
+      if (GRAVITY) blob[i].force.add(PVector.mult(Gn, blob[i].mass));
       
       if (keys[0]) { // Up
-        blob[i].force.add(new PVector(0.0, -60.0));
+        blob[i].force.add(new PVector(0.0, -80*blob[i].mass));
       }
       if (keys[1]) { // Left
         blob[i].force.add(new PVector(-60.0, 0.0));
       }
       if (keys[2]) { // Down
-        blob[i].force.add(new PVector(0.0, 200.0));
+        blob[i].force.add(new PVector(0.0, 60.0));
       }
       if (keys[3]) { // Right
         blob[i].force.add(new PVector(60.0, 0.0));
@@ -51,31 +54,56 @@ class ParticleSystem
   }
 
   void integrate() {
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < blob.length; i++) {
       blob[i].integrateVerlet(timestep);
-    }
-  }
-
-  void constraints() {
-    for (int i = 0; i < num; i++) {
-      // Iterate through all connected constraints
-      int segments = blob[i].constraints.size();
-      for (int j = 0; j < segments; j++) {
-        Constraint c = (Constraint) blob[i].constraints.get(j);
-        c.satisfyConstraints(blob[i]);
+      // Dragged around
+      if (blob[i].drag) {
+        PVector m = new PVector(mouseX, mouseY);
+        blob[i].pos.set(m);
       }
     }
   }
 
+  void constraints() {
+    for (int n = 0; n < RELAX; n++) {
+      for (int i = 0; i < blob.length; i++) {
+        // Iterate through all connected constraints
+        int segments = blob[i].constraints.size();
+        for (int j = 0; j < segments; j++) {
+          Constraint c = (Constraint) blob[i].constraints.get(j);
+          c.satisfyConstraints(blob[i]);
+        }
+  
+        // Project points outside of obstacle during border collision
+        blob[i].pos = vmin(vmax(blob[i].pos, new PVector(0.0, 0.0, 0.0)), new PVector(float(width), float(height), 0.0));
+      }
+    }
+    
+    blob[0].pos.set(blob[0].pos0.x, blob[0].pos0.y); // lock particle 0
+    //blob[1].pos.set(blob[1].pos.x, blob[1].pos0.y); // lock particle 1
+  }
+
   void render() {
-    for (int i = 0; i < num; i++) {
-      stroke(0, 0, 0);
-      ellipse(blob[i].pos.x, blob[i].pos.y, blob[i].mass*10, blob[i].mass*10);
-      // Iterate through all connected constraints
-      int segments = blob[i].constraints.size();
-      for (int j = 0; j < segments; j++) {
-        Constraint c = (Constraint) blob[i].constraints.get(j);
-        line(blob[i].pos.x, blob[i].pos.y, c.neighbor.pos.x, c.neighbor.pos.y);
+    for (int i = 0; i < blob.length; i++) {
+      if (DEBUG) {
+        if (blob[i].drag) {
+          PVector m = new PVector(mouseX, mouseY);
+          stroke(204, 0, 0);
+          // Mouse drag
+          line(blob[i].pos.x, blob[i].pos.y, m.x, m.y);
+        }
+        else stroke(0, 102, 153);
+        noFill();
+        // Particle
+        ellipse(blob[i].pos.x, blob[i].pos.y, blob[i].mass, blob[i].mass);
+        // Iterate through all connected constraints
+        stroke(0, 0, 0);
+        int segments = blob[i].constraints.size();
+        for (int j = 0; j < segments; j++) {
+          Constraint c = (Constraint) blob[i].constraints.get(j);
+          // Constraint between particles 
+          line(blob[i].pos.x, blob[i].pos.y, c.neighbor.pos.x, c.neighbor.pos.y);
+        }
       }
     }
   }
@@ -86,17 +114,19 @@ class Particle
   PVector pos0; // Previous position
   PVector pos; // Current position
   PVector force;
-  float mass;
+  float mass; // Size of particle
   ArrayList constraints; // Links to other particles
+  boolean drag;
   
-  Particle() {
+  Particle(float m) {
     pos0 = new PVector(0.0, 0.0);
     pos = new PVector(0.0, 0.0);
     force = new PVector(0.0, 0.0);
-    mass = 1.0;
+    mass = m;
     constraints = new ArrayList();
+    drag = false;
   }
-  
+
   // Set position
   void setPos(float x, float y) {
     pos0.set(x, y);
@@ -119,12 +149,5 @@ class Particle
     c.initSemiRigid(pt, min, max, mid, force);
     constraints.add(c);  
   }
-
-  /*
-  void constraints() {    
-    // Project points outside of obstacle during border collision
-    //pos = vmin(vmax(pos, new PVector(0.0, 0.0, 0.0)), new PVector(float(width), float(height), 0.0));
-  }
-  */
 }
 
