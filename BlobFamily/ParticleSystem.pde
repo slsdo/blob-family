@@ -30,20 +30,13 @@ class ParticleSystem
       
       // Apply gravity if enabled
       if (GRAVITY) blob[i].force.add(PVector.mult(Gn, blob[i].mass));
-      
-      if (keys[0]) { // Up
-        blob[i].force.add(new PVector(0.0, -80*blob[i].mass));
-      }
-      if (keys[1]) { // Left
-        blob[i].force.add(new PVector(-60.0, 0.0));
-      }
-      if (keys[2]) { // Down
-        blob[i].force.add(new PVector(0.0, 60.0));
-      }
-      if (keys[3]) { // Right
-        blob[i].force.add(new PVector(60.0, 0.0));
-      }
-      
+
+      if (keys[0]) { blob[i].force.add(new PVector(0.0, -60.0)); } // Up
+      if (keys[1]) { blob[i].force.add(new PVector(-60.0, 0.0)); } // Left
+      if (keys[2]) { blob[i].force.add(new PVector(0.0, 60.0)); } // Down
+      if (keys[3]) { blob[i].force.add(new PVector(60.0, 0.0)); } // Right
+      if (jump == 1) { blob[i].force.add(new PVector(0.0, -50000.0*blob[i].mass)); jump = -1; } // Jump
+
       // Iterate through all connected constraints
       int segments = blob[i].constraints.size();
       for (int j = 0; j < segments; j++) {
@@ -56,6 +49,7 @@ class ParticleSystem
   void integrate() {
     for (int i = 0; i < blob.length; i++) {
       blob[i].integrateVerlet(timestep);
+      
       // Dragged around
       if (blob[i].drag) {
         PVector m = new PVector(mouseX, mouseY);
@@ -79,7 +73,7 @@ class ParticleSystem
       }
     }
     
-    blob[0].pos.set(blob[0].pos0.x, blob[0].pos0.y); // lock particle 0
+    //blob[0].pos.set(blob[0].pos0.x, blob[0].pos0.y); // lock particle 0
     //blob[1].pos.set(blob[1].pos.x, blob[1].pos0.y); // lock particle 1
   }
 

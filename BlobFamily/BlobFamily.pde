@@ -9,11 +9,12 @@ final int SEMI_RIGID = 2; // Semi-Rigid constraint
 int PT_COLLISION = 3; // World-Point collision
 int LN_COLLISION = 4; // World-Line collision
 boolean GRAVITY = true; // Toggle gravity
-PVector Gn = new PVector(0.0, 50.0);
+PVector Gn = new PVector(0.0, 80.0);
 
 Environment en;
 boolean DEBUG = true;
 
+int jump = 0;
 ParticleSystem test;
 
 boolean[] keys = new boolean[4]; // Check key press

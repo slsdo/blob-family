@@ -26,8 +26,10 @@ void keyPressed() {
     else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = true;
     else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = true;
     else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = true;
-  
-    if (key == ' ') test = createVerletBlob(20, width/2, height/2, 20, 50, 80, 20);
+
+    if (key == ' ' && jump == 0) jump = 1;
+
+    if (key == '1') test = createVerletBlob(20, width/2, height/2, 20, 50, 80, 20);
 }
 
 void keyReleased() {
@@ -35,5 +37,7 @@ void keyReleased() {
     else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = false;
     else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = false;
     else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = false;
+
+    if (key == ' ' || jump == -1) jump = 0;
 }
 
