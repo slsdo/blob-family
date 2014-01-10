@@ -7,14 +7,10 @@ class Level
   
   void initWallSimple() {
     walls = new Wall[4];
-    // Ceiling
-    walls[0] = new Wall(0.0, 0.0, width, 20.0);
-    // Floor
-    walls[1] = new Wall(0.0, height - 20.0, width, height);
-    // Left wall
-    walls[2] = new Wall(0.0, 20.0, 20.0, height - 20.0);
-    // right wall
-    walls[3] = new Wall(width - 20.0, 20.0, width, height - 20.0);
+    walls[0] = new Wall(0.0, 0.0, width, 20.0); // Ceiling
+    walls[1] = new Wall(0.0, height - 20.0, width, height); // Floor
+    walls[2] = new Wall(0.0, 20.0, 20.0, height - 20.0); // Left wall
+    walls[3] = new Wall(width - 20.0, 20.0, width, height - 20.0); // right wall
   }
   
   void render() {

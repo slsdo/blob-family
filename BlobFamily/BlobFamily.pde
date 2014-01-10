@@ -1,39 +1,43 @@
 /*
- Blob Family - v0.0.1 - 2014/01/05
+ Blob Family - v0.0.5 - 2014/01/10
  */
 
-float STEP_SIZE = 0.05;
-int RELAX = 1; // Relaxation iteration
-boolean ENABLE_GRAVITY = true; // Toggle gravity
 final int RIGID = 1; // Rigid constraint
 final int SEMI_RIGID = 2; // Semi-Rigid constraint
 
-PVector Gn = new PVector(0.0, 80.0);
-float friction = 1.0;
-Level lv;
+float step_size = 0.05;
+float friction = 1.0; // Friction force
+int relax_iter = 1; // Relaxation iteration
+int jump = 0; // Keep track of jump state
+boolean enable_gravity = true; // Toggle gravity
 boolean DEBUG = true;
-
-int jump = 0;
-ParticleSystem test;
-
 boolean[] keys = new boolean[4]; // Check key press
+PVector gravity = new PVector(0.0, 80.0); // Gravity vector
+Level lv;
+ArrayList blobs;
 
 void setup()
 {
   size(800, 500);
   background(255, 255, 255);
+  
   lv = new Level();
   lv.initWallSimple();
-  test = createVerletBlob(20, width/2, height/2, 20, 50, 80, 10);
-  //test = createVerletTest2P();
+
+  blobs = new ArrayList();
 }
 
 void draw()
 {
   background(255, 255, 255);
   lv.render();
-  test.update();
-  test.render();
+  
+  int blobnum = blobs.size();
+  for (int i = 0; i < blobnum; i++) {
+    ParticleSystem b = (ParticleSystem) blobs.get(i);
+      b.update();
+      b.render();
+  }
   
   if (DEBUG) {
     fill(0, 102, 153);
@@ -42,25 +46,11 @@ void draw()
   }
 }
 
-ParticleSystem createVerletTest2P()
-{
-  ParticleSystem verlet = new ParticleSystem(2, 20, STEP_SIZE);
-  
-  verlet.blob[0].setPos(300, 300);
-  verlet.blob[1].setPos(310, 300);
-  
-  // Create constraints for surrounding particles
-  verlet.blob[0].addSemiRigidConstraints(verlet.blob[1], 40, 80, 100, 10);
-  verlet.blob[1].addSemiRigidConstraints(verlet.blob[0], 40, 80, 100, 10);
-  
-  return verlet;
-}
-
-ParticleSystem createVerletBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+void addVerletBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
-  ParticleSystem verlet = new ParticleSystem(segments + 1, 5, STEP_SIZE);
+  ParticleSystem verlet = new ParticleSystem(segments + 1, 5, step_size);
   
   // Center particle
   verlet.blob[0].setPos(x, y);
@@ -86,7 +76,21 @@ ParticleSystem createVerletBlob(int segments, float x, float y, float min, float
     center.addSemiRigidConstraints(pa[i], min, mid, max, kspring);
   }
   
-  return verlet;
+  blobs.add(verlet);
+}
+
+void addTest2P()
+{
+  ParticleSystem test = new ParticleSystem(2, 20, step_size);
+  
+  test.blob[0].setPos(300, 300);
+  test.blob[1].setPos(310, 300);
+  
+  // Create constraints for surrounding particles
+  test.blob[0].addSemiRigidConstraints(test.blob[1], 40, 80, 100, 10);
+  test.blob[1].addSemiRigidConstraints(test.blob[0], 40, 80, 100, 10);
+  
+  blobs.add(test);
 }
 
 // Some math functions

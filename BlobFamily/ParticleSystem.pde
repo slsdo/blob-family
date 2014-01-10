@@ -30,7 +30,7 @@ class ParticleSystem
       blob[i].force.set(0.0, 0.0);
       
       // Apply gravity if enabled
-      if (ENABLE_GRAVITY) blob[i].force.add(PVector.mult(Gn, blob[i].mass));
+      if (enable_gravity) blob[i].force.add(PVector.mult(gravity, blob[i].mass));
 
       if (keys[0]) { blob[i].force.add(new PVector(0.0, -60.0)); } // Up
       if (keys[1]) { blob[i].force.add(new PVector(-60.0, 0.0)); } // Left
@@ -60,7 +60,7 @@ class ParticleSystem
   }
 
   void constraints() {
-    for (int n = 0; n < RELAX; n++) {
+    for (int n = 0; n < relax_iter; n++) {
       for (int i = 0; i < blob.length; i++) {
         // Iterate through all connected constraints
         int segments = blob[i].constraints.size();
