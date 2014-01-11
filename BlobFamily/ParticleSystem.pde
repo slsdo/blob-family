@@ -1,7 +1,7 @@
 
 class ParticleSystem
 {
-  Particle[] blob; // Array of VerletParticle
+  Particle[] blob; // Array of particles
   float mass; // Total mass
   float timestep; // Time step
   
@@ -114,7 +114,7 @@ class Particle
   PVector pos; // Current position
   PVector force;
   float mass; // Size of particle
-  ArrayList constraints; // Links to other particles
+  ArrayList links; // Constraint between particles
   boolean drag;
   
   Particle(float m) {
@@ -122,7 +122,7 @@ class Particle
     pos = new PVector(0.0, 0.0);
     force = new PVector(0.0, 0.0);
     mass = m;
-    constraints = new ArrayList();
+    links = new ArrayList();
     drag = false;
   }
 
@@ -143,10 +143,12 @@ class Particle
     pos0 = temp.get();
   }
   
-  void addSemiRigidConstraints(Particle pt, float min, float max, float mid, float force) {
+  // Add constraints
+  void addSemiRigidConstraint(Particle p,, float min, float max, float mid, float force) {
     Constraint c = new Constraint();
-    c.initSemiRigid(pt, min, max, mid, force);
+    c.initSemiRigid(p, min, max, mid, force);
     constraints.add(c);  
   }
+  
 }
 

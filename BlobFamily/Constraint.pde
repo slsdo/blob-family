@@ -12,8 +12,8 @@ class Constraint
   
   Constraint() {}
   
-  void initSemiRigid(Particle pt, float mn, float mx, float m, float ks) {
-    neighbor = pt;
+  void initSemiRigid(Particle p, float mn, float mx, float m, float ks) {
+    neighbor = p;
     type = 2;
     min = mn;
     max = mx;
