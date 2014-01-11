@@ -11,9 +11,11 @@ float p_mass = 1.0; // Particle mass
 float j_force = -50000.0; // Jump force
 int relax_iter = 1; // Relaxation iteration
 int jump = 0; // Keep track of jump state
+boolean DEBUG = false;
+boolean STRUCT = true;
 boolean enable_gravity = false; // Toggle gravity
-boolean DEBUG = true;
 boolean[] keys = new boolean[4]; // Check key press
+boolean d_lock1 = false; // DEBUG: lock first particle
 PVector gravity = new PVector(0.0, 80.0); // Gravity vector
 Level lv;
 ArrayList blobs;
@@ -165,11 +167,11 @@ void addTest2P()
 {
   ParticleSystem test = new ParticleSystem(step_size);
   
-  Particle t1 = test.addParticle(20, 300, 300);
-  Particle t2 = test.addParticle(20, 310, 300);
+  Particle t1 = test.addParticle(100, 200, 300);
+  Particle t2 = test.addParticle(100, 400, 300);
   
   // Create constraints for surrounding particles
-  addSemiRigidConstraint(t1, t2, 40, 80, 100, 10);
+  addSemiRigidConstraint(t1, t2, 100, 150, 200, 10);
   
   blobs.add(test);
 }
@@ -190,10 +192,10 @@ void addTest3P()
   blobs.add(test);
 }
 
-void addSemiRigidConstraint(Particle p1, Particle p2, float min, float max, float mid, float force)
+void addSemiRigidConstraint(Particle p1, Particle p2, float min, float mid, float max, float force)
 {
-  p1.addSemiRigid(p2, min, max, mid, force);
-  p2.addSemiRigid(p1, min, max, mid, force);
+  p1.addSemiRigid(p2, min, mid, max, force);
+  p2.addSemiRigid(p1, min, mid, max, force);
 }
 
 // Some math functions

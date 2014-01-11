@@ -27,7 +27,7 @@ class ParticleSystem
     accumulate(n); // Force Accumulator
     integrate(n); // Verlet Integration
     constraints(n); // Satisfy Constraints
-    //collision(n); // Collision Detection
+    collision(n); // Collision Detection
   }
 
   void accumulate(int n) {
@@ -65,7 +65,7 @@ class ParticleSystem
 
       if (DEBUG) {
         stroke(0, 204, 0);
-        line(p.pos.x, p.pos.y, p.pos.x + p.force.x, p.pos.y + p.force.y);
+        line(p.pos.x, p.pos.y, p.pos.x + p.force.x*0.1, p.pos.y + p.force.y*0.1);
       }
     }
   }
@@ -95,8 +95,8 @@ class ParticleSystem
         }
       }
     }
-
-    //p.pos.set(p.pos0.x, p.pos0.y); // lock particle 0
+    
+    if (d_lock1) { Particle p = (Particle) blob.get(0); p.pos.set(p.pos0.x, p.pos0.y); } // lock particle 0
   }
 
   void collision(int n) {
@@ -111,7 +111,7 @@ class ParticleSystem
     int n = blob.size();
     for (int i = 0; i < n; i++) {
       Particle p = (Particle) blob.get(i);
-      if (DEBUG) {
+      if (DEBUG || STRUCT) {
         if (p.drag) {
           PVector m = new PVector(mouseX, mouseY);
           stroke(204, 0, 0);
@@ -127,7 +127,14 @@ class ParticleSystem
         int segments = p.constraints.size();
         for (int j = 0; j < segments; j++) {
           Constraint c = (Constraint) p.constraints.get(j);
-          // Constraint between particles 
+          
+          if (DEBUG) {
+            // Constraint between particles
+            PVector normal = new PVector(-(c.neighbor.pos.y - p.pos.y), (c.neighbor.pos.x - p.pos.x));
+            stroke(c.c_debug);
+            line(c.c_pt.x + normal.x*0.1, c.c_pt.y + normal.y*0.1, c.c_pt.x + normal.x*-0.1, c.c_pt.y + normal.y*-0.1);
+          }
+          stroke(#666666);
           line(p.pos.x, p.pos.y, c.neighbor.pos.x, c.neighbor.pos.y);
         }
       }
@@ -171,9 +178,9 @@ class Particle
   }
 
   // Add constraints
-  void addSemiRigid(Particle p, float min, float max, float mid, float force) {
+  void addSemiRigid(Particle p, float min, float mid, float max, float force) {
     Constraint c = new Constraint();
-    c.initSemiRigid(p, min, max, mid, force);
+    c.initSemiRigid(p, min, mid, max, force);
     constraints.add(c);
   }
 }

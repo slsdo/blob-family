@@ -41,15 +41,19 @@ void keyPressed() {
     else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = true;
 
     if (key == ' ' && jump == 0) jump = 1;
+    if (key == 'g') { enable_gravity = !enable_gravity; }
+    if (key == 'l') { d_lock1 = !d_lock1; }
+    if (key == 's') { STRUCT = !STRUCT; }
+    if (key == 'd') { DEBUG = !DEBUG; }
 
     if (key == '1') {
       blobs = new ArrayList();
-      addTest3P();
+      addTest2P();
     }
 
     if (key == '2') {
       blobs = new ArrayList();
-      addVerletBlob(20, width/2, height/2, 100, 150, 200, 10);
+      addVerletBlob(20, width/2, height/2, 150, 200, 250, 10);
     }
 
     if (key == '3') {
@@ -59,22 +63,7 @@ void keyPressed() {
 
     if (key == '4') {
       blobs = new ArrayList();
-      addSkinnedBlob(20, width/2, height/2, 50, 100, 2, 100);
-    }
-
-    if (key == '5') {
-      blobs = new ArrayList();
-      addSkinnedBlob(80, width/2, height/2, 80, 120, 10, 2);
-    }
-
-    if (key == '6') {
-      blobs = new ArrayList();
-      addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 20);
-    }
-
-    if (key == '7') {
-      blobs = new ArrayList();
-      addSkinnedBlob(40, width/2, height/2, 50, 60, 10, 20);
+      addSkinnedBlob(20, width/2, height/2, 50, 65, 10, 50);
     }
 }
 
