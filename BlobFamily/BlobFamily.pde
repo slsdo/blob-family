@@ -5,8 +5,8 @@
 final int RIGID = 1; // Rigid constraint
 final int SEMI_RIGID = 2; // Semi-Rigid constraint
 
-float step_size = 0.03;
-float friction = 1.0; // Friction force
+float t_size = 0.03; // Time step
+float f_friction = 1.0; // Friction force
 float p_mass = 1.0; // Particle mass
 float j_force = -50000.0; // Jump force
 int relax_iter = 1; // Relaxation iteration
@@ -36,13 +36,14 @@ void draw()
   background(255, 255, 255);
   lv.render();
   
-  int bnum = blobs.size();
-  for (int i = 0; i < bnum; i++) {
+  int m = blobs.size();
+  for (int i = 0; i < m; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
     b.update();
     b.render();
   }
   
+  // Display framerate
   if (DEBUG) {
     fill(0, 102, 153);
     text(frameRate, 10, 25);
@@ -55,7 +56,7 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
-  ParticleSystem verlet = new ParticleSystem(step_size);
+  ParticleSystem verlet = new ParticleSystem(t_size);
   
   // Center particle
   Particle center = verlet.addParticle(p_mass, x, y);
@@ -89,7 +90,7 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
   float seg_length2 = 2.0 * mid * sin(angle_step*2.0/2.0);
   float seg_length3 = 2.0 * mid * sin(angle_step*3.0/2.0);
-  ParticleSystem braced = new ParticleSystem(step_size);
+  ParticleSystem braced = new ParticleSystem(t_size);
   
   // Center particle
   Particle center = braced.addParticle(p_mass, x, y);
@@ -126,7 +127,7 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   float outer_length = 2.0 * outer * sin(angle_step/2.0);
   float inner_length = 2.0 * inner * sin(angle_step/2.0);
   float ring_gap = outer - inner;
-  ParticleSystem skinned = new ParticleSystem(step_size);
+  ParticleSystem skinned = new ParticleSystem(t_size);
   
   // Center particle
   Particle center = skinned.addParticle(p_mass, x, y);
@@ -165,7 +166,7 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
 
 void addTest2P()
 {
-  ParticleSystem test = new ParticleSystem(step_size);
+  ParticleSystem test = new ParticleSystem(t_size);
   
   Particle t1 = test.addParticle(100, 200, 300);
   Particle t2 = test.addParticle(100, 400, 300);
@@ -178,7 +179,7 @@ void addTest2P()
 
 void addTest3P()
 {
-  ParticleSystem test = new ParticleSystem(step_size);
+  ParticleSystem test = new ParticleSystem(t_size);
   
   Particle t1 = test.addParticle(20, 300, 300);
   Particle t2 = test.addParticle(20, 340, 300);

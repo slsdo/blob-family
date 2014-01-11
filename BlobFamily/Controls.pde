@@ -1,14 +1,14 @@
 
 void mousePressed () {
   // Get mouse position
-  PVector m = new PVector(mouseX, mouseY);
+  PVector m = new PVector(mouseX, mouseY);  
   // Look for a particle the mouse is in
-  int bnum = blobs.size();
-  for (int i = 0; i < bnum; i++) {
-    ParticleSystem b = (ParticleSystem) blobs.get(i);
-    int pnum = b.blob.size();
-    for (int j = 0; j < pnum; j++) {
-      Particle p = (Particle) b.blob.get(j);
+  int bn = blobs.size();
+  for (int i = 0; i < bn; i++) {
+    ParticleSystem b = (ParticleSystem) blobs.get(i);    
+    int n = b.blob.size();
+    for (int j = 0; j < n; j++) {
+      Particle p = (Particle) b.blob.get(j);      
       // If the mouse is close to the particle
       if (dist2(p.pos, m) < sq(p.mass + 10)) {
         if (mouseButton == LEFT) p.drag = true;
@@ -20,11 +20,11 @@ void mousePressed () {
 
 void mouseReleased() {
   // User is no-longer dragging
-  int bnum = blobs.size();
-  for (int i = 0; i < bnum; i++) {
+  int bn = blobs.size();
+  for (int i = 0; i < bn; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
-    int pnum = b.blob.size();
-    for (int j = 0; j < pnum; j++) {
+    int n = b.blob.size();
+    for (int j = 0; j < n; j++) {
       Particle p = (Particle) b.blob.get(j);
       if (p.drag) {
         p.drag = false;
@@ -35,36 +35,23 @@ void mouseReleased() {
 }
 
 void keyPressed() {
+    // Movements
          if (key == 'w' || (key == CODED && keyCode == UP)) keys[0] = true;
     else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = true;
     else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = true;
     else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = true;
 
-    if (key == ' ' && jump == 0) jump = 1;
-    if (key == 'g') { enable_gravity = !enable_gravity; }
-    if (key == 'l') { d_lock1 = !d_lock1; }
-    if (key == 's') { STRUCT = !STRUCT; }
-    if (key == 'd') { DEBUG = !DEBUG; }
+    if (key == ' ' && jump == 0) jump = 1; // Jump
+    if (key == 'g') enable_gravity = !enable_gravity; // Enable gravity
+    if (key == 'l') d_lock1 = !d_lock1; // Lock first particle
+    if (key == 's') STRUCT = !STRUCT; // Structural view
+    if (key == 'd') DEBUG = !DEBUG; // Debug view
+    if (key == ENTER || key == RETURN) blobs = new ArrayList(); // Reset blobs
 
-    if (key == '1') {
-      blobs = new ArrayList();
-      addTest2P();
-    }
-
-    if (key == '2') {
-      blobs = new ArrayList();
-      addVerletBlob(20, width/2, height/2, 150, 200, 250, 10);
-    }
-
-    if (key == '3') {
-      blobs = new ArrayList();
-      addBracedBlob(20, width/2, height/2, 50, 80, 120, 10);
-    }
-
-    if (key == '4') {
-      blobs = new ArrayList();
-      addSkinnedBlob(20, width/2, height/2, 50, 65, 10, 50);
-    }
+    if (key == '1') addTest2P();
+    if (key == '2') addVerletBlob(20, width/2, height/2, 150, 200, 250, 10);
+    if (key == '3') addBracedBlob(20, width/2, height/2, 50, 80, 120, 10);
+    if (key == '4') addSkinnedBlob(20, width/2, height/2, 50, 65, 10, 50);
 }
 
 void keyReleased() {

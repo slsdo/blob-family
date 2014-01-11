@@ -5,6 +5,7 @@ class Level
   
   Level() {}
   
+  // Create bounding walls
   void initWallSimple() {
     walls = new Wall[4];
     walls[0] = new Wall(0.0, 0.0, width, 20.0); // Ceiling
