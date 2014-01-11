@@ -40,12 +40,37 @@ void keyPressed() {
 
     if (key == '1') {
       blobs = new ArrayList();
-      addVerletBlob(20, width/2, height/2, 20, 50, 80, 10);
+      addTest2P();
     }
 
     if (key == '2') {
       blobs = new ArrayList();
-      addTest2P();
+      addVerletBlob(20, width/2, height/2, 40, 60, 80, 10);
+    }
+
+    if (key == '3') {
+      blobs = new ArrayList();
+      addBracedBlob(20, width/2, height/2, 40, 60, 80, 10);
+    }
+
+    if (key == '4') {
+      blobs = new ArrayList();
+      addSkinnedBlob(40, width/2, height/2, 50, 60, 10, 100);
+    }
+
+    if (key == '5') {
+      blobs = new ArrayList();
+      addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 10);
+    }
+
+    if (key == '6') {
+      blobs = new ArrayList();
+      addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 20);
+    }
+
+    if (key == '7') {
+      blobs = new ArrayList();
+      addSkinnedBlob(40, width/2, height/2, 50, 60, 10, 20);
     }
 }
 
