@@ -3,13 +3,15 @@ void mousePressed () {
   // Get mouse position
   PVector m = new PVector(mouseX, mouseY);
   // Look for a particle the mouse is in
-  int blobnum = blobs.size();
-  for (int i = 0; i < blobnum; i++) {
+  int bnum = blobs.size();
+  for (int i = 0; i < bnum; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
-    for (int j = 0; j < b.blob.length; j++) {
+    int pnum = b.blob.size();
+    for (int j = 0; j < pnum; j++) {
+      Particle p = (Particle) b.blob.get(j);
       // If the mouse is close to the particle
-      if (dist2(b.blob[j].pos, m) < sq(b.blob[j].mass*1.5)) {
-        if (mouseButton == LEFT) b.blob[j].drag = true;
+      if (dist2(p.pos, m) < sq(p.mass + 10)) {
+        if (mouseButton == LEFT) p.drag = true;
         break; // Break out of the loop because we found our particle
       }
     }
@@ -18,12 +20,14 @@ void mousePressed () {
 
 void mouseReleased() {
   // User is no-longer dragging
-  int blobnum = blobs.size();
-  for (int i = 0; i < blobnum; i++) {
+  int bnum = blobs.size();
+  for (int i = 0; i < bnum; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
-    for (int j = 0; j < b.blob.length; j++) {
-      if (b.blob[j].drag) {
-        b.blob[j].drag = false;
+    int pnum = b.blob.size();
+    for (int j = 0; j < pnum; j++) {
+      Particle p = (Particle) b.blob.get(j);
+      if (p.drag) {
+        p.drag = false;
         break;
       }
     }
@@ -40,27 +44,27 @@ void keyPressed() {
 
     if (key == '1') {
       blobs = new ArrayList();
-      addTest2P();
+      addTest3P();
     }
 
     if (key == '2') {
       blobs = new ArrayList();
-      addVerletBlob(20, width/2, height/2, 40, 60, 80, 10);
+      addVerletBlob(10, width/2, height/2, 100, 150, 200, 10);
     }
 
     if (key == '3') {
       blobs = new ArrayList();
-      addBracedBlob(20, width/2, height/2, 40, 60, 80, 10);
+      addBracedBlob(10, width/2, height/2, 50, 80, 120, 10);
     }
 
     if (key == '4') {
       blobs = new ArrayList();
-      addSkinnedBlob(40, width/2, height/2, 50, 60, 10, 100);
+      addSkinnedBlob(10, width/2, height/2, 50, 100, 2, 100);
     }
 
     if (key == '5') {
       blobs = new ArrayList();
-      addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 10);
+      addSkinnedBlob(80, width/2, height/2, 80, 120, 10, 2);
     }
 
     if (key == '6') {
