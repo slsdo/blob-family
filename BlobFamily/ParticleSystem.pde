@@ -8,7 +8,7 @@ class ParticleSystem
     // Initialize system of particles
   ParticleSystem(float t) {
     blob = new ArrayList();
-    mass = 0.0;
+    //mass = 0.0;
     timestep = t;
   }
 
@@ -17,7 +17,7 @@ class ParticleSystem
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
     blob.add(p);
-    mass += m; // Accumulate blob mass
+    //mass += m; // Accumulate blob mass
     return p;
   }
 
@@ -27,7 +27,7 @@ class ParticleSystem
     accumulate(n); // Force Accumulator
     integrate(n); // Verlet Integration
     constraints(n); // Satisfy Constraints
-    collision(n); // Collision Detection
+    //collision(n); // Collision Detection
   }
 
   void accumulate(int n) {
@@ -63,7 +63,7 @@ class ParticleSystem
         p.force.add(c.accumulateForce(p));
       }
 
-      if (false) {
+      if (DEBUG) {
         stroke(0, 204, 0);
         line(p.pos.x, p.pos.y, p.pos.x + p.force.x, p.pos.y + p.force.y);
       }

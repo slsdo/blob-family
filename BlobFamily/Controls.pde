@@ -49,17 +49,17 @@ void keyPressed() {
 
     if (key == '2') {
       blobs = new ArrayList();
-      addVerletBlob(10, width/2, height/2, 100, 150, 200, 10);
+      addVerletBlob(20, width/2, height/2, 100, 150, 200, 10);
     }
 
     if (key == '3') {
       blobs = new ArrayList();
-      addBracedBlob(10, width/2, height/2, 50, 80, 120, 10);
+      addBracedBlob(20, width/2, height/2, 50, 80, 120, 10);
     }
 
     if (key == '4') {
       blobs = new ArrayList();
-      addSkinnedBlob(10, width/2, height/2, 50, 100, 2, 100);
+      addSkinnedBlob(20, width/2, height/2, 50, 100, 2, 100);
     }
 
     if (key == '5') {
