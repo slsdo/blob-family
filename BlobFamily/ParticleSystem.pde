@@ -127,7 +127,7 @@ class ParticleSystem
             PVector normal = new PVector(-(c.neighbor.pos.y - p.pos.y), (c.neighbor.pos.x - p.pos.x));
             normal.mult(0.1);
             stroke(c.d_color);
-            line(c.d_pt.x + normal.x, c.d_pt.y + normal.y, c.d_pt.x + -normal.x, c.d_pt.y + -normal.y);
+            line(c.d_pt.x + normal.x, c.d_pt.y + normal.y, c.d_pt.x + -1*normal.x, c.d_pt.y + -1*normal.y);
           }
           // Constraint between particles
           stroke(#666666);

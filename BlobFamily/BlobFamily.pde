@@ -164,6 +164,18 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   blobs.add(skinned);
 }
 
+void addTest1P()
+{
+  ParticleSystem test = new ParticleSystem(t_size);
+  
+  Particle t1 = test.addParticle(100, 200, 300);
+  
+  // Create constraints for surrounding particles
+  addSemiRigidConstraint(t1, t1, 100, 150, 200, 10);
+  
+  blobs.add(test);
+}
+
 void addTest2P()
 {
   ParticleSystem test = new ParticleSystem(t_size);

@@ -36,10 +36,10 @@ void mouseReleased() {
 
 void keyPressed() {
     // Movements
-         if (key == 'w' || (key == CODED && keyCode == UP)) keys[0] = true;
-    else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = true;
-    else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = true;
-    else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = true;
+         if (key == CODED && keyCode == UP) keys[0] = true;
+    else if (key == CODED && keyCode == LEFT) keys[1] = true;
+    else if (key == CODED && keyCode == DOWN) keys[2] = true;
+    else if (key == CODED && keyCode == RIGHT) keys[3] = true;
 
     if (key == ' ' && jump == 0) jump = 1; // Jump
     if (key == 'g') enable_gravity = !enable_gravity; // Enable gravity
@@ -48,17 +48,17 @@ void keyPressed() {
     if (key == 'd') DEBUG = !DEBUG; // Debug view
     if (key == ENTER || key == RETURN) blobs = new ArrayList(); // Reset blobs
 
-    if (key == '1') addTest2P();
+    if (key == '1') addTest3P();
     if (key == '2') addVerletBlob(20, width/2, height/2, 150, 200, 250, 10);
     if (key == '3') addBracedBlob(20, width/2, height/2, 50, 80, 120, 10);
     if (key == '4') addSkinnedBlob(20, width/2, height/2, 50, 65, 10, 50);
 }
 
 void keyReleased() {
-         if (key == 'w' || (key == CODED && keyCode == UP)) keys[0] = false;
-    else if (key == 'a' || (key == CODED && keyCode == LEFT)) keys[1] = false;
-    else if (key == 's' || (key == CODED && keyCode == DOWN)) keys[2] = false;
-    else if (key == 'd' || (key == CODED && keyCode == RIGHT)) keys[3] = false;
+         if (key == CODED && keyCode == UP) keys[0] = false;
+    else if (key == CODED && keyCode == LEFT) keys[1] = false;
+    else if (key == CODED && keyCode == DOWN) keys[2] = false;
+    else if (key == CODED && keyCode == RIGHT) keys[3] = false;
 
     if (key == ' ' || jump == -1) jump = 0;
 }
