@@ -40,7 +40,6 @@ class ParticleSystem
       if (enable_gravity) p.force.add(PVector.mult(gravity, p.mass));
 
       // Keyboard input
-      if (jump == 1) { p.force.add(new PVector(0.0, j_force*p.mass)); jump = -1; } // Jump
       if (keys[0]) p.force.add(new PVector(0.0, -60.0)); // Up
       if (keys[1]) p.force.add(new PVector(-60.0, 0.0)); // Left
       if (keys[2]) p.force.add(new PVector(0.0, 60.0)); // Down
@@ -52,6 +51,8 @@ class ParticleSystem
         Constraint c = (Constraint) p.constraints.get(j);
         p.force.add(c.accumulateForce(p));
       }
+      
+      p.force.limit(f_max); // Limit force in case of emergency
 
       if (DEBUG) {
         // Project force
@@ -75,7 +76,7 @@ class ParticleSystem
   }
 
   void constraints(int n) {
-    // Relaxation loop
+    // Relaxation loop to avoid inversions of the spring mass structure
     for (int iter = 0; iter < relax_iter; iter++) {
       for (int i = 0; i < n; i++) {
         Particle p = (Particle) blob.get(i);
@@ -89,7 +90,10 @@ class ParticleSystem
     }
     
     // lock particle 0
-    if (DEBUG && d_lock1) { Particle p = (Particle) blob.get(0); p.pos.set(p.pos0.x, p.pos0.y); }
+    if (DEBUG && d_lock1) {
+      Particle p1 = (Particle) blob.get(0);
+      p1.pos.set(p1.pos0.x, p1.pos0.y);
+    }
   }
 
   void collision(int n) {
@@ -115,7 +119,9 @@ class ParticleSystem
         else stroke(0, 102, 153);        
         // Particle
         noFill();
+        strokeWeight(2);
         ellipse(p.pos.x, p.pos.y, p.mass, p.mass);
+        strokeWeight(1);
         
         // Iterate through all connected constraints
         stroke(0, 0, 0);

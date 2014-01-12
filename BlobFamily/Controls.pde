@@ -10,7 +10,7 @@ void mousePressed () {
     for (int j = 0; j < n; j++) {
       Particle p = (Particle) b.blob.get(j);      
       // If the mouse is close to the particle
-      if (dist2(p.pos, m) < sq(p.mass + 10)) {
+      if (dist2(p.pos, m) < sq(p.mass + 20)) {
         if (mouseButton == LEFT) p.drag = true;
         break; // Break out of the loop because we found our particle
       }
@@ -41,17 +41,23 @@ void keyPressed() {
     else if (key == CODED && keyCode == DOWN) keys[2] = true;
     else if (key == CODED && keyCode == RIGHT) keys[3] = true;
 
-    if (key == ' ' && jump == 0) jump = 1; // Jump
     if (key == 'g') enable_gravity = !enable_gravity; // Enable gravity
     if (key == 'l') d_lock1 = !d_lock1; // Lock first particle
     if (key == 's') STRUCT = !STRUCT; // Structural view
     if (key == 'd') DEBUG = !DEBUG; // Debug view
-    if (key == ENTER || key == RETURN) blobs = new ArrayList(); // Reset blobs
+    if (key == ' ') blobs = new ArrayList(); // Reset blobs
 
-    if (key == '1') addTest3P();
-    if (key == '2') addVerletBlob(20, width/2, height/2, 150, 200, 250, 10);
-    if (key == '3') addBracedBlob(20, width/2, height/2, 50, 80, 120, 10);
-    if (key == '4') addSkinnedBlob(20, width/2, height/2, 50, 65, 10, 50);
+    if (key == '1') addTest2P();
+    //if (key == '1') addTest3P();
+    if (key == '2') addVerletBlob(30, width/2, height/2, 80, 120, 150, 10); // Big verlet
+    //if (key == '2') addVerletBlob(40, width/2, height/2, 20, 50, 80, 20); // Small verlet
+    if (key == '3') addBracedBlob(30, width/2, height/2, 80, 120, 150, 10); // Big braced
+    //if (key == '3') addBracedBlob(40, width/2, height/2, 20, 30, 35, 20); // Small braced
+    if (key == '4') addSkinnedBlob(30, width/2, height/2, 100, 120, 10, 10);
+    //if (key == '4') addSkinnedBlob(40, width/2, height/2, 50, 60, 10, 100);
+    //if (key == '5') addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 10);
+    //if (key == '6') addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 20);
+    //if (key == '7') addSkinnedBlob(80, width/2, height/2, 50, 60, 10, 20);
 }
 
 void keyReleased() {
@@ -59,7 +65,5 @@ void keyReleased() {
     else if (key == CODED && keyCode == LEFT) keys[1] = false;
     else if (key == CODED && keyCode == DOWN) keys[2] = false;
     else if (key == CODED && keyCode == RIGHT) keys[3] = false;
-
-    if (key == ' ' || jump == -1) jump = 0;
 }
 

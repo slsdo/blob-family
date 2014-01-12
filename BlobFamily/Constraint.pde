@@ -81,8 +81,6 @@ class Constraint
       neighbor.pos.set(PVector.sub(midpt, PVector.div(it2me, 2.0)));
     }
     // Debug point
-    if (DEBUG) {
-      d_pt.set(p.pos);
-    }
+    if (DEBUG) d_pt.set(p.pos);
   }
 }

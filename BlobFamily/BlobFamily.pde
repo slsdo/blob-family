@@ -7,18 +7,17 @@ final int SEMI_RIGID = 2; // Semi-Rigid constraint
 
 float t_size = 0.03; // Time step
 float f_friction = 1.0; // Friction force
+float f_max = 5000.0; // Max force
 float p_mass = 1.0; // Particle mass
-float j_force = -50000.0; // Jump force
-int relax_iter = 1; // Relaxation iteration
-int jump = 0; // Keep track of jump state
+int relax_iter = 4; // Relaxation iteration
 boolean DEBUG = false;
 boolean STRUCT = true;
 boolean enable_gravity = false; // Toggle gravity
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
 PVector gravity = new PVector(0.0, 80.0); // Gravity vector
-Level lv;
 ArrayList blobs;
+Level lv;
 
 void setup()
 {
@@ -36,8 +35,8 @@ void draw()
   background(255, 255, 255);
   lv.render();
   
-  int m = blobs.size();
-  for (int i = 0; i < m; i++) {
+  int bn = blobs.size();
+  for (int i = 0; i < bn; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
     b.update();
     b.render();
