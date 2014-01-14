@@ -47,9 +47,9 @@ class Constraint
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
     // Vector from neighbor to rest position
     it2me.normalize();
-    PVector midpt = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
+    PVector it2mid = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
     // Vector from current postition to rest position
-    PVector me2mid = PVector.sub(midpt, p.pos);
+    PVector me2mid = PVector.sub(it2mid, p.pos);
     // Apply spring force
     me2mid.mult(kspring);
     return me2mid;

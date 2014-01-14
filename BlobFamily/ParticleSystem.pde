@@ -54,6 +54,13 @@ class ParticleSystem
       
       p.force.limit(f_max); // Limit force in case of emergency
 
+      // Dragged around by mouse
+      if (p.drag) {
+        PVector m = new PVector(mouseX, mouseY);
+        p.force.add(PVector.mult(PVector.sub(m, p.pos), 500));
+        //p.pos.set(m);
+      }
+
       if (DEBUG) {
         // Project force
         stroke(0, 204, 0);
@@ -66,12 +73,6 @@ class ParticleSystem
     for (int i = 0; i < n; i++) {
       Particle p = (Particle) blob.get(i);
       p.integrateVerlet(timestep);
-
-      // Dragged around by mouse
-      if (p.drag) {
-        PVector m = new PVector(mouseX, mouseY);
-        p.pos.set(m);
-      }
     }
   }
 
