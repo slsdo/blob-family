@@ -77,7 +77,7 @@ class ParticleSystem
   }
 
   void constraints(int n) {
-    // Relaxation loop to avoid inversions of the spring mass structure
+    // Relaxation loop to avoid collapse of the spring mass structure
     for (int iter = 0; iter < relax_iter; iter++) {
       for (int i = 0; i < n; i++) {
         Particle p = (Particle) blob.get(i);

@@ -59,21 +59,21 @@ class Constraint
     // Vector from neighbor to self
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
     // Length of spring
-    float radius = it2me.mag();
+    float dist = it2me.mag();
     // Calculate constraint debug color
     if (DEBUG) {
-      float delta = radius - mid;
+      float delta = dist - mid;
       float r = (delta < 0) ? map(delta, mid, (min - mid), 0, 255) : 0; // Less than rest length is red
       float b = (delta > 0) ? map(delta, mid, (max - mid), 0, 255) : 0; // More than rest length is blue
       d_color = color(r, 0, b);
     }
     // Constraint to min/max
-    if (radius < min || radius > max) {
-      if (radius < min) radius = min;
-      if (radius > max) radius = max;
+    if (dist < min || dist > max) {
+      if (dist < min) dist = min;
+      if (dist > max) dist = max;
       // Scale to length
       it2me.normalize();
-      it2me = PVector.mult(it2me, radius);
+      it2me = PVector.mult(it2me, dist);
       // Find midpoint
       PVector midpt = PVector.div(PVector.add(p.pos, neighbor.pos), 2.0);
       // Apply constraint

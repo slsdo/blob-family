@@ -163,6 +163,76 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   blobs.add(skinned);
 }
 
+// Blob with every particle connected to every other particle
+void addDenseBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+{
+  float min_ratio = min/mid;
+  float max_ratio = max/mid;
+  float angle_step = 2.0 * PI / float(segments);
+  float seg_length = 2.0 * mid * sin(angle_step/2.0);
+  ParticleSystem dense = new ParticleSystem(t_size);
+  
+  Particle[] pa = new Particle[segments];
+  // Create surrounding particles
+  for (int i = 0; i < segments; i++) {
+    float angle = i * angle_step;
+    float bx = x + mid * cos(angle);
+    float by = y + mid * sin(angle);
+    pa[i] = dense.addParticle(p_mass, bx, by);
+  }
+  
+  // Create constraints for surrounding particles
+  for (int i = 0; i < segments; i++) {
+    for (int j = 0; j < segments; j++) {
+      if (i != j) {
+        PVector i2j = PVector.sub(pa[i].pos, pa[j].pos);
+        float distance = i2j.mag();
+        // Find ratio of particle distance to segment length
+        float dist =  distance / seg_length;
+        // Add constraint to all other points
+        addSemiRigidConstraint(pa[i], pa[j], dist*seg_length*min_ratio, dist*seg_length, dist*seg_length*max_ratio, kspring);
+      }
+    }
+  }
+  
+  blobs.add(dense);
+}
+
+// Similar construction as Gish, same as Braced but also connected to opposite particle
+void addTarBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+{
+  float angle_step = 2.0 * PI / float(segments);
+  float seg_length = 2.0 * mid * sin(angle_step/2.0);
+  float seg_length2 = 2.0 * mid * sin(angle_step*2.0/2.0);
+  ParticleSystem tar = new ParticleSystem(t_size);
+
+
+  Particle[] pa = new Particle[segments];
+  // Create surrounding particles
+  for (int i = 0; i < segments; i++) {
+    float angle = i * angle_step;
+    float bx = x + mid * cos(angle);
+    float by = y + mid * sin(angle);
+    pa[i] = tar.addParticle(p_mass, bx, by);
+  }
+  
+  // Create constraints for surrounding particles
+  for (int i = 0; i < segments; i++) {
+    int next = (i + 1) % segments;
+    int next1 = (i + 2) % segments;
+    // To next point
+    addSemiRigidConstraint(pa[i], pa[next], seg_length*0.8, seg_length, seg_length*1.2, kspring);
+    // To next next point
+    addSemiRigidConstraint(pa[i], pa[next1], seg_length*0.1, seg_length2, seg_length2*2.1, kspring);
+    // To opposite point
+    if (i < segments/2) { 
+      addSemiRigidConstraint(pa[i], pa[i + segments/2], min, mid*2.0, max, kspring);
+    }
+  }
+  
+  blobs.add(tar);
+}
+
 void addTest1P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
