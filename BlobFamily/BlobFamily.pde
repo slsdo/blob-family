@@ -1,5 +1,5 @@
 /*
- Blob Family - v0.0.5 - 2014/01/10
+ Blob Family - v0.0.6 - 2014/01/22
  */
 
 final int RIGID = 1; // Rigid constraint

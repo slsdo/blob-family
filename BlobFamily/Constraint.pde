@@ -40,19 +40,24 @@ class Constraint
       default: { break; }      
     }
   }
-  
+
   PVector accumulateSemiRigid(Particle p) {
     // Obeys Hook's law: f = k * (x - x0)
     // Vector from neighbor to self
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
-    // Vector from neighbor to rest position
-    it2me.normalize();
-    PVector it2mid = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
-    // Vector from current postition to rest position
-    PVector me2mid = PVector.sub(it2mid, p.pos);
-    // Apply spring force
-    me2mid.mult(kspring);
-    return me2mid;
+    // Length of spring
+    float dist = it2me.mag();
+    if (dist > 0) {
+      // Vector from neighbor to rest position
+      it2me.normalize();
+      PVector it2mid = PVector.add(neighbor.pos, PVector.mult(it2me, mid));
+      // Vector from current postition to rest position
+      PVector me2mid = PVector.sub(it2mid, p.pos);
+      // Apply spring force
+      me2mid.mult(kspring);
+      return me2mid;
+    }
+    return new PVector(0, 0);
   }
   
   void satisfySemiRigid(Particle p) {
@@ -68,7 +73,7 @@ class Constraint
       d_color = color(r, 0, b);
     }
     // Constraint to min/max
-    if (dist < min || dist > max) {
+    if (dist > 0 && (dist < min || dist > max)) {
       if (dist < min) dist = min;
       if (dist > max) dist = max;
       // Scale to length
