@@ -6,9 +6,9 @@ void mousePressed () {
   int bn = blobs.size();
   for (int i = 0; i < bn; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);    
-    int n = b.blob.size();
+    int n = b.ps.size();
     for (int j = 0; j < n; j++) {
-      Particle p = (Particle) b.blob.get(j);      
+      Particle p = (Particle) b.ps.get(j);      
       // If the mouse is close to the particle
       if (dist2(p.pos, m) < sq(p.mass + 20)) {
         if (mouseButton == LEFT) p.drag = true;
@@ -23,9 +23,9 @@ void mouseReleased() {
   int bn = blobs.size();
   for (int i = 0; i < bn; i++) {
     ParticleSystem b = (ParticleSystem) blobs.get(i);
-    int n = b.blob.size();
+    int n = b.ps.size();
     for (int j = 0; j < n; j++) {
-      Particle p = (Particle) b.blob.get(j);
+      Particle p = (Particle) b.ps.get(j);
       if (p.drag) {
         p.drag = false;
         break;

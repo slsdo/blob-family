@@ -1,13 +1,13 @@
 
 class ParticleSystem
 {
-  ArrayList blob; // Particles
+  ArrayList ps; // Particles
   float totalmass; // Total mass
   float timestep; // Time step
 
   // Initialize system of particles
   ParticleSystem(float t) {
-    blob = new ArrayList();
+    ps = new ArrayList();
     totalmass = 0.0;
     timestep = t;
   }
@@ -16,23 +16,23 @@ class ParticleSystem
   Particle addParticle(float m, float x, float y) {
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
-    blob.add(p);
+    ps.add(p);
     totalmass += m; // Accumulate blob mass
     return p;
   }
 
   // Step through time iteration
   void update() {
-    int n = blob.size(); // Cache arraylist size
-    accumulate(n); // Force Accumulator
+    int n = ps.size(); // Cache arraylist size
+    accumulateForces(n); // Force Accumulator
     integrate(n); // Verlet Integration
     constraints(n); // Satisfy Constraints
     collision(n); // Collision Detection
   }
 
-  void accumulate(int n) {
+  void accumulateForces(int n) {
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+      Particle p = (Particle) ps.get(i);
 
       p.force.set(0.0, 0.0); // Reset force
 
@@ -49,7 +49,7 @@ class ParticleSystem
       int segments = p.constraints.size();
       for (int j = 0; j < segments; j++) {
         Constraint c = (Constraint) p.constraints.get(j);
-        p.force.add(c.accumulateForce(p));
+        p.force.add(c.getForce(p));
       }
       
       p.force.limit(f_max); // Limit force in case of emergency
@@ -71,7 +71,7 @@ class ParticleSystem
 
   void integrate(int n) {
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+      Particle p = (Particle) ps.get(i);
       p.integrateVerlet(timestep);
     }
   }
@@ -80,7 +80,7 @@ class ParticleSystem
     // Relaxation loop to avoid collapse of the spring mass structure
     for (int iter = 0; iter < relax_iter; iter++) {
       for (int i = 0; i < n; i++) {
-        Particle p = (Particle) blob.get(i);
+        Particle p = (Particle) ps.get(i);
         // Iterate through all connected constraints
         int segments = p.constraints.size();
         for (int j = 0; j < segments; j++) {
@@ -92,23 +92,23 @@ class ParticleSystem
     
     // lock particle 0
     if (DEBUG && d_lock1) {
-      Particle p1 = (Particle) blob.get(0);
+      Particle p1 = (Particle) ps.get(0);
       p1.pos.set(p1.pos0.x, p1.pos0.y);
     }
   }
 
   void collision(int n) {
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+      Particle p = (Particle) ps.get(i);
       // Project points outside of obstacle during border collision
       worldBoundCollision(p);
     }
   }
 
   void render() {
-    int n = blob.size();
+    int n = ps.size();
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+      Particle p = (Particle) ps.get(i);
       
       if (DEBUG || STRUCT) {
         // Mouse drag force

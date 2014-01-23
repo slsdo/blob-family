@@ -25,10 +25,10 @@ class Constraint
     d_pt = new PVector(0.0, 0.0);
   }
 
-  PVector accumulateForce(Particle p) {
+  PVector getForce(Particle p) {
     PVector forcetotal = new PVector();
     switch(type) {
-      case SEMI_RIGID: { forcetotal = accumulateSemiRigid(p); break; }
+      case SEMI_RIGID: { forcetotal = getSemiRigidForce(p); break; }
       default: { forcetotal.set(0.0, 0.0); }      
     }
     return forcetotal;    
@@ -41,7 +41,7 @@ class Constraint
     }
   }
 
-  PVector accumulateSemiRigid(Particle p) {
+  PVector getSemiRigidForce(Particle p) {
     // Obeys Hook's law: f = k * (x - x0)
     // Vector from neighbor to self
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
