@@ -1,13 +1,13 @@
 
 class ParticleSystem
 {
-  ArrayList ps; // Particles
+  ArrayList<Particle> particles; // Particles
   float totalmass; // Total mass
   float timestep; // Time step
 
   // Initialize system of particles
   ParticleSystem(float t) {
-    ps = new ArrayList();
+    particles = new ArrayList<Particle>();
     totalmass = 0.0;
     timestep = t;
   }
@@ -16,75 +16,45 @@ class ParticleSystem
   Particle addParticle(float m, float x, float y) {
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
-    ps.add(p);
+    particles.add(p);
     totalmass += m; // Accumulate blob mass
     return p;
   }
 
   // Step through time iteration
   void update() {
-    int n = ps.size(); // Cache arraylist size
-    accumulateForces(n); // Force Accumulator
-    integrate(n); // Verlet Integration
-    constraints(n); // Satisfy Constraints
-    collision(n); // Collision Detection
+    updateForce(); // Force Accumulator
+    updateVerlet(); // Verlet Integration
+    updateConstraint(); // Satisfy Constraints
+    updateCollision(); // Collision Detection
   }
 
-  void accumulateForces(int n) {
+  void updateForce() {
+    int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) ps.get(i);
-
-      p.force.set(0.0, 0.0); // Reset force
-
-      // Apply gravity if enabled
-      if (enable_gravity) p.force.add(PVector.mult(gravity, p.mass));
-
-      // Keyboard input
-      if (keys[0]) p.force.add(new PVector(0.0, -60.0)); // Up
-      if (keys[1]) p.force.add(new PVector(-60.0, 0.0)); // Left
-      if (keys[2]) p.force.add(new PVector(0.0, 60.0)); // Down
-      if (keys[3]) p.force.add(new PVector(60.0, 0.0)); // Right
-
-      // Gather forces from all connected constraints
-      int segments = p.constraints.size();
-      for (int j = 0; j < segments; j++) {
-        Constraint c = (Constraint) p.constraints.get(j);
-        p.force.add(c.getForce(p));
-      }
-      
-      p.force.limit(f_max); // Limit force in case of emergency
-
-      // Dragged around by mouse
-      if (p.drag) {
-        PVector m = new PVector(mouseX, mouseY);
-        p.force.add(PVector.mult(PVector.sub(m, p.pos), 500));
-        //p.pos.set(m);
-      }
-
-      if (DEBUG) {
-        // Project force
-        stroke(0, 204, 0);
-        line(p.pos.x, p.pos.y, p.pos.x + p.force.x*0.1, p.pos.y + p.force.y*0.1);
-      }
+      Particle p = particles.get(i);
+      p.accumulateForces();
     }
   }
 
-  void integrate(int n) {
+  void updateVerlet() {
+    int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) ps.get(i);
+      Particle p = particles.get(i);
       p.integrateVerlet(timestep);
     }
   }
 
-  void constraints(int n) {
+  void updateConstraint() {
+    int n = particles.size(); // Cache arraylist size
     // Relaxation loop to avoid collapse of the spring mass structure
     for (int iter = 0; iter < relax_iter; iter++) {
       for (int i = 0; i < n; i++) {
-        Particle p = (Particle) ps.get(i);
+        Particle p = particles.get(i);
         // Iterate through all connected constraints
         int segments = p.constraints.size();
         for (int j = 0; j < segments; j++) {
-          Constraint c = (Constraint) p.constraints.get(j);
+          Constraint c = p.constraints.get(j);
           c.satisfyConstraints(p);
         }
       }
@@ -92,23 +62,24 @@ class ParticleSystem
     
     // lock particle 0
     if (DEBUG && d_lock1) {
-      Particle p1 = (Particle) ps.get(0);
+      Particle p1 = particles.get(0);
       p1.pos.set(p1.pos0.x, p1.pos0.y);
     }
   }
 
-  void collision(int n) {
+  void updateCollision() {
+    int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) ps.get(i);
+      Particle p = particles.get(i);
       // Project points outside of obstacle during border collision
       worldBoundCollision(p);
     }
   }
 
   void render() {
-    int n = ps.size();
+    int n = particles.size();
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) ps.get(i);
+      Particle p = particles.get(i);
       
       if (DEBUG || STRUCT) {
         // Mouse drag force
@@ -151,7 +122,7 @@ class Particle
   PVector pos; // Current position
   PVector force;
   float mass; // Size of particle
-  ArrayList constraints; // Constraint between particles
+  ArrayList<Constraint> constraints; // Constraint between particles
   boolean drag; // Mouse drag
 
   Particle(float m) {
@@ -159,7 +130,7 @@ class Particle
     pos = new PVector(0.0, 0.0);
     force = new PVector(0.0, 0.0);
     mass = m;
-    constraints = new ArrayList();
+    constraints = new ArrayList<Constraint>();
     drag = false;
   }
 
@@ -167,6 +138,42 @@ class Particle
   void setPos(float x, float y) {
     pos0.set(x, y);
     pos.set(x, y);
+  }
+  
+  // Gather forces acting on the particle
+  void accumulateForces() {
+    force.set(0.0, 0.0); // Reset force
+
+    // Apply gravity if enabled
+    if (enable_gravity) force.add(PVector.mult(gravity, mass));
+
+    // Keyboard input
+    if (keys[0]) force.add(new PVector(0.0, -60.0)); // Up
+    if (keys[1]) force.add(new PVector(-60.0, 0.0)); // Left
+    if (keys[2]) force.add(new PVector(0.0, 60.0)); // Down
+    if (keys[3]) force.add(new PVector(60.0, 0.0)); // Right
+
+    // Gather forces from all connected constraints
+    int segments = constraints.size();
+    for (int j = 0; j < segments; j++) {
+      Constraint c = constraints.get(j);
+      force.add(c.getForce(this));
+    }
+    
+    force.limit(f_max); // Limit force in case of emergency
+
+    // Dragged around by mouse
+    if (drag) {
+      PVector m = new PVector(mouseX, mouseY);
+      force.add(PVector.mult(PVector.sub(m, pos), 500));
+      //pos.set(m);
+    }
+
+    if (DEBUG) {
+      // Project force
+      stroke(0, 204, 0);
+      line(pos.x, pos.y, pos.x + force.x*0.1, pos.y + force.y*0.1);
+    }
   }
 
   // Verlet integration
