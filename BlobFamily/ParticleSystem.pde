@@ -10,7 +10,7 @@ class ParticleSystem
   ParticleSystem(float t) {
     particles = new ArrayList<Particle>();
     constraints = new ArrayList<Constraint>();
-    totalmass = 0.0;
+    totalmass = 0;
     timestep = t;
   }
 
@@ -23,8 +23,19 @@ class ParticleSystem
     return p;
   }
 
-  // Create constraint between two particles
-  void addSemiRigidConstraint(Particle p1, Particle p2, float min, float mid, float max, float force) {
+  // Create rigid constraint between two particles
+  void addConstraint(Particle p1, Particle p2, float len) {
+    Constraint c = new Constraint();
+    c.initRigid(p1, p2, len);
+    constraints.add(c);
+    
+    // Store constraints acting on the particle
+    p1.addLink(c);
+    p2.addLink(c);
+  }
+
+  // Create semi-rigid constraint between two particles
+  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force) {
     Constraint c = new Constraint();
     c.initSemiRigid(p1, p2, min, mid, max, force);
     constraints.add(c);
@@ -36,10 +47,20 @@ class ParticleSystem
 
   // Step through time iteration
   void update() {
+    updateJsZ(); // PVector.set() fix for JS mode
     updateForce(); // Force Accumulator
     updateVerlet(); // Verlet Integration
     updateConstraint(); // Satisfy Constraints
     updateCollision(); // Collision Detection
+  }
+
+  // In JS mode PVector.set() sets z to NaN if it's 0, this fixes it   
+  void updateJsZ() {
+    int psize = particles.size(); // Cache arraylist size
+    for (int i = 0; i < psize; i++) {
+      Particle p = particles.get(i);
+      p.pos.z = 0;
+    }
   }
 
   void updateForce() {

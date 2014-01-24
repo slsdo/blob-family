@@ -9,9 +9,9 @@ class Particle
   boolean drag; // Mouse drag
 
   Particle(float m) {
-    pos0 = new PVector(0.0, 0.0);
-    pos = new PVector(0.0, 0.0);
-    force = new PVector(0.0, 0.0);
+    pos0 = new PVector(0, 0, 0);
+    pos = new PVector(0, 0, 0);
+    force = new PVector(0, 0, 0);
     mass = m;
     links = new ArrayList<Constraint>();
     drag = false;
@@ -25,16 +25,16 @@ class Particle
   
   // Gather forces acting on the particle
   void accumulateForces() {
-    force.set(0.0, 0.0); // Reset force
+    force.set(0, 0, 0); // Reset force
 
     // Apply gravity if enabled
     if (enable_gravity) force.add(PVector.mult(gravity, mass));
 
     // Keyboard input
-    if (keys[0]) force.add(new PVector(0.0, -60.0)); // Up
-    if (keys[1]) force.add(new PVector(-60.0, 0.0)); // Left
-    if (keys[2]) force.add(new PVector(0.0, 60.0)); // Down
-    if (keys[3]) force.add(new PVector(60.0, 0.0)); // Right
+    if (keys[0]) force.add(new PVector(0, -60.0, 0)); // Up
+    if (keys[1]) force.add(new PVector(-60.0, 0, 0)); // Left
+    if (keys[2]) force.add(new PVector(0, 60.0, 0)); // Down
+    if (keys[3]) force.add(new PVector(60.0, 0, 0)); // Right
 
     // Gather forces from all connected constraints
     int lsize = links.size();
