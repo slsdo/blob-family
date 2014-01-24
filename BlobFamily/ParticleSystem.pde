@@ -50,8 +50,8 @@ class ParticleSystem
     updateJsZ(); // PVector.set() fix for JS mode
     updateForce(); // Force Accumulator
     updateVerlet(); // Verlet Integration
-    updateConstraint(); // Satisfy Constraints
     updateCollision(); // Collision Detection
+    updateConstraint(); // Satisfy Constraints
   }
 
   // In JS mode PVector.set() sets z to NaN if it's 0, this fixes it   
