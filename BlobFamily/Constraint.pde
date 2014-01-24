@@ -1,7 +1,8 @@
 
 class Constraint
 {
-  Particle neighbor; // Connected particle
+  Particle p1; // Connected particle 1
+  Particle p2; // Connected particle 2
   int type; // Type of constraint
   
   // For semi-rigid constraint
@@ -9,13 +10,15 @@ class Constraint
   float max; // Stretched length
   float mid; // Relaxed length
   float kspring; // Spring elasticity
+  
   color d_color; // Debug constraint color
   PVector d_pt; // Debug constraint point
   
   Constraint() {}
   
-  void initSemiRigid(Particle p, float mn, float md, float mx, float ks) {
-    neighbor = p;
+  void initSemiRigid(Particle particle1, Particle particle2, float mn, float md, float mx, float ks) {
+    p1 = particle1;
+    p2 = particle2;
     type = 2;
     min = mn;
     mid = md;
@@ -34,14 +37,18 @@ class Constraint
     return forcetotal;    
   }
   
-  void satisfyConstraints(Particle p) {
+  void satisfyConstraint() {
     switch(type) {
-      case SEMI_RIGID: { satisfySemiRigid(p); break; }
+      case SEMI_RIGID: { satisfySemiRigid(); break; }
       default: { break; }      
     }
   }
 
   PVector getSemiRigidForce(Particle p) {
+    // Determine current particle
+    Particle neighbor;
+    if (p == p1) neighbor = p2;
+    else neighbor = p1;
     // Obeys Hook's law: f = k * (x - x0)
     // Vector from neighbor to self
     PVector it2me = PVector.sub(p.pos, neighbor.pos);
@@ -60,9 +67,9 @@ class Constraint
     return new PVector(0, 0);
   }
   
-  void satisfySemiRigid(Particle p) {
+  void satisfySemiRigid() {
     // Vector from neighbor to self
-    PVector it2me = PVector.sub(p.pos, neighbor.pos);
+    PVector it2me = PVector.sub(p1.pos, p2.pos);
     // Length of spring
     float dist = it2me.mag();
     // Calculate constraint debug color
@@ -80,12 +87,12 @@ class Constraint
       it2me.normalize();
       it2me = PVector.mult(it2me, dist);
       // Find midpoint
-      PVector midpt = PVector.div(PVector.add(p.pos, neighbor.pos), 2.0);
+      PVector midpt = PVector.div(PVector.add(p1.pos, p2.pos), 2.0);
       // Apply constraint
-      p.pos.set(PVector.add(midpt, PVector.div(it2me, 2.0)));
-      neighbor.pos.set(PVector.sub(midpt, PVector.div(it2me, 2.0)));
+      p1.pos.set(PVector.add(midpt, PVector.div(it2me, 2.0)));
+      p2.pos.set(PVector.sub(midpt, PVector.div(it2me, 2.0)));
     }
     // Debug point
-    if (DEBUG) d_pt.set(p.pos);
+    if (DEBUG) d_pt.set(PVector.div(PVector.add(p1.pos, p2.pos), 2.0));
   }
 }

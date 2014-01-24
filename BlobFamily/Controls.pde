@@ -3,12 +3,12 @@ void mousePressed () {
   // Get mouse position
   PVector m = new PVector(mouseX, mouseY);  
   // Look for a particle the mouse is in
-  int bn = blobs.size();
-  for (int i = 0; i < bn; i++) {
-    ParticleSystem b = (ParticleSystem) blobs.get(i);    
-    int n = b.particles.size();
-    for (int j = 0; j < n; j++) {
-      Particle p = (Particle) b.particles.get(j);      
+  int bsize = blobs.size();
+  for (int i = 0; i < bsize; i++) {
+    ParticleSystem ps = (ParticleSystem) blobs.get(i);    
+    int psize = ps.particles.size();
+    for (int j = 0; j < psize; j++) {
+      Particle p = (Particle) ps.particles.get(j);      
       // If the mouse is close to the particle
       if (dist2(p.pos, m) < sq(p.mass + 20)) {
         if (mouseButton == LEFT) p.drag = true;
@@ -20,12 +20,12 @@ void mousePressed () {
 
 void mouseReleased() {
   // User is no-longer dragging
-  int bn = blobs.size();
-  for (int i = 0; i < bn; i++) {
-    ParticleSystem b = (ParticleSystem) blobs.get(i);
-    int n = b.particles.size();
-    for (int j = 0; j < n; j++) {
-      Particle p = (Particle) b.particles.get(j);
+  int bsize = blobs.size();
+  for (int i = 0; i < bsize; i++) {
+    ParticleSystem ps = (ParticleSystem) blobs.get(i);
+    int psize = ps.particles.size();
+    for (int j = 0; j < psize; j++) {
+      Particle p = (Particle) ps.particles.get(j);
       if (p.drag) {
         p.drag = false;
         break;

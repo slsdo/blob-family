@@ -16,7 +16,7 @@ boolean enable_gravity = false; // Toggle gravity
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
 PVector gravity = new PVector(0.0, 80.0); // Gravity vector
-ArrayList blobs;
+ArrayList<ParticleSystem> blobs;
 Level lv;
 
 void setup()
@@ -27,7 +27,7 @@ void setup()
   lv = new Level();
   lv.initWallSimple();
 
-  blobs = new ArrayList();
+  blobs = new ArrayList<ParticleSystem>();
 }
 
 void draw()
@@ -35,9 +35,9 @@ void draw()
   background(255, 255, 255);
   lv.render();
   
-  int bn = blobs.size();
-  for (int i = 0; i < bn; i++) {
-    ParticleSystem b = (ParticleSystem) blobs.get(i);
+  int bsize = blobs.size();
+  for (int i = 0; i < bsize; i++) {
+    ParticleSystem b = blobs.get(i);
     b.update();
     b.render();
   }
@@ -74,9 +74,9 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
   for (int i = 0; i < segments; i++) {
     int next = (i + 1) % segments;
     // To next point
-    addSemiRigidConstraint(pa[i], pa[next], seg_length*0.9, seg_length, seg_length*1.1, kspring);
+    verlet.addSemiRigidConstraint(pa[i], pa[next], seg_length*0.9, seg_length, seg_length*1.1, kspring);
     // To center point
-    addSemiRigidConstraint(pa[i], center, min, mid, max, kspring);
+    verlet.addSemiRigidConstraint(pa[i], center, min, mid, max, kspring);
   }
   
   blobs.add(verlet);
@@ -109,11 +109,11 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
     int next = (i + 1) % segments;
     int next2 = (i + 3) % segments;
     // To next point
-    addSemiRigidConstraint(pa[i], pa[next], seg_length*0.1, seg_length, seg_length*2.1, kspring);
+    braced.addSemiRigidConstraint(pa[i], pa[next], seg_length*0.1, seg_length, seg_length*2.1, kspring);
     // To next next point
-    addSemiRigidConstraint(pa[i], pa[next2], seg_length*0.1, seg_length3, seg_length3*2.1, kspring);
+    braced.addSemiRigidConstraint(pa[i], pa[next2], seg_length*0.1, seg_length3, seg_length3*2.1, kspring);
     // To center point
-    addSemiRigidConstraint(pa[i], center, min, mid, max, kspring);
+    braced.addSemiRigidConstraint(pa[i], center, min, mid, max, kspring);
   }
   
   blobs.add(braced);
@@ -149,15 +149,15 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   for (int i = 0; i < segments; i++) {
     int next = (i + 1) % segments;
     // Outer ring
-    addSemiRigidConstraint(pa[i*2], pa[next*2], outer_length*0.9, outer_length, outer_length*1.1, outer_spring);
+    skinned.addSemiRigidConstraint(pa[i*2], pa[next*2], outer_length*0.9, outer_length, outer_length*1.1, outer_spring);
     // Inner ring
-    addSemiRigidConstraint(pa[i*2 + 1], pa[next*2 + 1], inner_length*0.9, inner_length, inner_length*1.1, outer_spring);
+    skinned.addSemiRigidConstraint(pa[i*2 + 1], pa[next*2 + 1], inner_length*0.9, inner_length, inner_length*1.1, outer_spring);
     // Join rings with structural springs
-    addSemiRigidConstraint(pa[i*2], pa[i*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
+    skinned.addSemiRigidConstraint(pa[i*2], pa[i*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
     // Cross brace
-    addSemiRigidConstraint(pa[i*2], pa[next*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
+    skinned.addSemiRigidConstraint(pa[i*2], pa[next*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
     // Inner ring to center point, with mid point of the spring to be greater than radius for internal pressure
-    addSemiRigidConstraint(pa[i*2 + 1], center, inner*0.2, inner*1.5, inner*2.1, inner_spring);
+    skinned.addSemiRigidConstraint(pa[i*2 + 1], center, inner*0.2, inner*1.5, inner*2.1, inner_spring);
   }
   
   blobs.add(skinned);
@@ -190,7 +190,7 @@ void addDenseBlob(int segments, float x, float y, float min, float mid, float ma
         // Find ratio of particle distance to segment length
         float dist =  distance / seg_length;
         // Add constraint to all other points
-        addSemiRigidConstraint(pa[i], pa[j], dist*seg_length*min_ratio, dist*seg_length, dist*seg_length*max_ratio, kspring);
+        dense.addSemiRigidConstraint(pa[i], pa[j], dist*seg_length*min_ratio, dist*seg_length, dist*seg_length*max_ratio, kspring);
       }
     }
   }
@@ -221,12 +221,12 @@ void addTarBlob(int segments, float x, float y, float min, float mid, float max,
     int next = (i + 1) % segments;
     int next1 = (i + 2) % segments;
     // To next point
-    addSemiRigidConstraint(pa[i], pa[next], seg_length*0.8, seg_length, seg_length*1.2, kspring);
+    tar.addSemiRigidConstraint(pa[i], pa[next], seg_length*0.8, seg_length, seg_length*1.2, kspring);
     // To next next point
-    addSemiRigidConstraint(pa[i], pa[next1], seg_length*0.1, seg_length2, seg_length2*2.1, kspring);
+    tar.addSemiRigidConstraint(pa[i], pa[next1], seg_length*0.1, seg_length2, seg_length2*2.1, kspring);
     // To opposite point
     if (i < segments/2) { 
-      addSemiRigidConstraint(pa[i], pa[i + segments/2], min, mid*2.0, max, kspring);
+      tar.addSemiRigidConstraint(pa[i], pa[i + segments/2], min, mid*2.0, max, kspring);
     }
   }
   
@@ -240,7 +240,7 @@ void addTest1P()
   Particle t1 = test.addParticle(100, 200, 300);
   
   // Create constraints for surrounding particles
-  addSemiRigidConstraint(t1, t1, 100, 150, 200, 10);
+  test.addSemiRigidConstraint(t1, t1, 100, 150, 200, 10);
   
   blobs.add(test);
 }
@@ -253,7 +253,7 @@ void addTest2P()
   Particle t2 = test.addParticle(100, 400, 300);
   
   // Create constraints for surrounding particles
-  addSemiRigidConstraint(t1, t2, 100, 150, 200, 10);
+  test.addSemiRigidConstraint(t1, t2, 100, 150, 200, 10);
   
   blobs.add(test);
 }
@@ -267,17 +267,11 @@ void addTest3P()
   Particle t3 = test.addParticle(20, 320, 330);
   
   // Create constraints for surrounding particles
-  addSemiRigidConstraint(t1, t2, 40, 80, 100, 10);
-  addSemiRigidConstraint(t1, t3, 40, 80, 100, 10);
-  addSemiRigidConstraint(t3, t2, 40, 80, 100, 10);
+  test.addSemiRigidConstraint(t1, t2, 40, 80, 100, 10);
+  test.addSemiRigidConstraint(t1, t3, 40, 80, 100, 10);
+  test.addSemiRigidConstraint(t3, t2, 40, 80, 100, 10);
   
   blobs.add(test);
-}
-
-void addSemiRigidConstraint(Particle p1, Particle p2, float min, float mid, float max, float force)
-{
-  p1.addSemiRigid(p2, min, mid, max, force);
-  p2.addSemiRigid(p1, min, mid, max, force);
 }
 
 // Some math functions
