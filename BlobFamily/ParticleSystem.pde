@@ -3,6 +3,7 @@ class ParticleSystem
 {
   ArrayList<Particle> particles; // Particles
   ArrayList<Constraint> constraints; // Constraint between particles
+  Collision col; // Collision info
   float totalmass; // Total mass
   float timestep; // Time step
 
@@ -10,21 +11,23 @@ class ParticleSystem
   ParticleSystem(float t) {
     particles = new ArrayList<Particle>();
     constraints = new ArrayList<Constraint>();
+    col = new Collision();
     totalmass = 0;
     timestep = t;
   }
 
   // Add particle to the blob
-  Particle addParticle(float m, float x, float y) {
+  Particle addParticle(float m, float x, float y, boolean collide) {
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
     particles.add(p);
     totalmass += m; // Accumulate blob mass
+    if (collide) col.vertices.add(p); // Watch particle for collisions
     return p;
   }
 
   // Create rigid constraint between two particles
-  void addConstraint(Particle p1, Particle p2, float len) {
+  void addConstraint(Particle p1, Particle p2, float len, boolean collide) {
     Constraint c = new Constraint();
     c.initRigid(p1, p2, len);
     constraints.add(c);
@@ -32,10 +35,11 @@ class ParticleSystem
     // Store constraints acting on the particle
     p1.addLink(c);
     p2.addLink(c);
+    if (collide) col.edges.add(c); // Watch particle for collisions
   }
 
   // Create semi-rigid constraint between two particles
-  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force) {
+  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force, boolean collide) {
     Constraint c = new Constraint();
     c.initSemiRigid(p1, p2, min, mid, max, force);
     constraints.add(c);
@@ -43,6 +47,7 @@ class ParticleSystem
     // Store constraints acting on the particle
     p1.addLink(c);
     p2.addLink(c);
+    if (collide) col.edges.add(c); // Watch particle for collisions
   }
 
   // Step through time iteration
@@ -136,7 +141,7 @@ class ParticleSystem
       Constraint c = (Constraint) constraints.get(i);
       // Constraint pressure
       if (DEBUG) {
-        PVector normal = new PVector(-(c.p2.pos.y - c.p1.pos.y), (c.p2.pos.x - c.p1.pos.x));
+        PVector normal = new PVector(c.p1.pos.y - c.p2.pos.y, c.p2.pos.x - c.p1.pos.x);
         normal.mult(0.1);
         stroke(c.d_color);
         line(c.d_pt.x + normal.x, c.d_pt.y + normal.y, c.d_pt.x + -1*normal.x, c.d_pt.y + -1*normal.y);

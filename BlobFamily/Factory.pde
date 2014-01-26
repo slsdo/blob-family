@@ -5,10 +5,10 @@ void addTest1P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(100, 200, 300);
+  Particle t1 = test.addParticle(100, 200, 300, true);
   
   // Create constraints for surrounding particles
-  test.addConstraint(t1, t1, 100, 150, 200, 10);
+  test.addConstraint(t1, t1, 100, 150, 200, 10, true);
   
   blobs.add(test);
 }
@@ -17,11 +17,11 @@ void addTest2P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(100, 200, 300);
-  Particle t2 = test.addParticle(100, 400, 300);
+  Particle t1 = test.addParticle(100, 200, 300, true);
+  Particle t2 = test.addParticle(100, 400, 300, true);
   
   // Create constraints for surrounding particles
-  test.addConstraint(t1, t2, 100, 150, 200, 10);
+  test.addConstraint(t1, t2, 100, 150, 200, 10, true);
   
   blobs.add(test);
 }
@@ -30,14 +30,14 @@ void addTest3P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(20, 300, 300);
-  Particle t2 = test.addParticle(20, 340, 300);
-  Particle t3 = test.addParticle(20, 320, 330);
+  Particle t1 = test.addParticle(20, 300, 300, true);
+  Particle t2 = test.addParticle(20, 340, 300, true);
+  Particle t3 = test.addParticle(20, 320, 330, true);
   
   // Create constraints for surrounding particles
-  test.addConstraint(t1, t2, 40, 80, 100, 10);
-  test.addConstraint(t1, t3, 40, 80, 100, 10);
-  test.addConstraint(t3, t2, 40, 80, 100, 10);
+  test.addConstraint(t1, t2, 40, 80, 100, 10, true);
+  test.addConstraint(t1, t3, 40, 80, 100, 10, true);
+  test.addConstraint(t3, t2, 40, 80, 100, 10, true);
   
   blobs.add(test);
 }
@@ -46,18 +46,18 @@ void addBox()
 {
   ParticleSystem box = new ParticleSystem(t_size);
   
-  Particle p1 = box.addParticle(1, 100, 100);
-  Particle p2 = box.addParticle(1, 150, 100);
-  Particle p3 = box.addParticle(1, 100, 150);
-  Particle p4 = box.addParticle(1, 150, 150);
+  Particle p1 = box.addParticle(1, 100, 100, true);
+  Particle p2 = box.addParticle(1, 150, 100, true);
+  Particle p3 = box.addParticle(1, 100, 150, true);
+  Particle p4 = box.addParticle(1, 150, 150, true);
   
   // Create constraints for surrounding particles
-  box.addConstraint(p1, p2, 50);
-  box.addConstraint(p3, p4, 50);
-  box.addConstraint(p1, p3, 50);
-  box.addConstraint(p2, p4, 50);
-  box.addConstraint(p2, p3, sqrt(50*50+50*50));
-  box.addConstraint(p1, p4, sqrt(50*50+50*50));
+  box.addConstraint(p1, p2, 50, true);
+  box.addConstraint(p3, p4, 50, true);
+  box.addConstraint(p1, p3, 50, true);
+  box.addConstraint(p2, p4, 50, true);
+  box.addConstraint(p2, p3, sqrt(50*50+50*50), false);
+  box.addConstraint(p1, p4, sqrt(50*50+50*50), false);
   
   blobs.add(box);
 }
@@ -70,7 +70,7 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
   ParticleSystem verlet = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = verlet.addParticle(p_mass, x, y);
+  Particle center = verlet.addParticle(p_mass, x, y, false);
   center.mass = segments;
   
   Particle[] pa = new Particle[segments];
@@ -79,16 +79,16 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = verlet.addParticle(p_mass, bx, by);
+    pa[i] = verlet.addParticle(p_mass, bx, by, true);
   }
   
   // Create constraints for surrounding particles
   for (int i = 0; i < segments; i++) {
     int next = (i + 1) % segments;
     // To next point
-    verlet.addConstraint(pa[i], pa[next], seg_length*0.9, seg_length, seg_length*1.1, kspring);
+    verlet.addConstraint(pa[i], pa[next], seg_length*0.9, seg_length, seg_length*1.1, kspring, true);
     // To center point
-    verlet.addConstraint(pa[i], center, min, mid, max, kspring);
+    verlet.addConstraint(pa[i], center, min, mid, max, kspring, false);
   }
   
   blobs.add(verlet);
@@ -104,7 +104,7 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
   ParticleSystem braced = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = braced.addParticle(p_mass, x, y);
+  Particle center = braced.addParticle(p_mass, x, y, false);
   center.mass = segments;
   
   Particle[] pa = new Particle[segments];
@@ -113,7 +113,7 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = braced.addParticle(p_mass, bx, by);
+    pa[i] = braced.addParticle(p_mass, bx, by, true);
   }
   
   // Create constraints for surrounding particles
@@ -121,11 +121,11 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
     int next = (i + 1) % segments;
     int next2 = (i + 3) % segments;
     // To next point
-    braced.addConstraint(pa[i], pa[next], seg_length*0.1, seg_length, seg_length*2.1, kspring);
+    braced.addConstraint(pa[i], pa[next], seg_length*0.1, seg_length, seg_length*2.1, kspring, true);
     // To next next point
-    braced.addConstraint(pa[i], pa[next2], seg_length*0.1, seg_length3, seg_length3*2.1, kspring);
+    braced.addConstraint(pa[i], pa[next2], seg_length*0.1, seg_length3, seg_length3*2.1, kspring, false);
     // To center point
-    braced.addConstraint(pa[i], center, min, mid, max, kspring);
+    braced.addConstraint(pa[i], center, min, mid, max, kspring, false);
   }
   
   blobs.add(braced);
@@ -141,7 +141,7 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   ParticleSystem skinned = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = skinned.addParticle(p_mass, x, y);
+  Particle center = skinned.addParticle(p_mass, x, y, false);
 
   Particle[] pa = new Particle[segments*2];
   // Create outer circle particles
@@ -152,62 +152,27 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
     float cx = x + outer * cos(angle);
     float cy = y + outer * sin(angle);
     // i*2 is outer
-    pa[i*2] = skinned.addParticle(p_mass, cx, cy);
+    pa[i*2] = skinned.addParticle(p_mass, cx, cy, true);
      // i*2+1 is inner
-    pa[i*2 + 1] = skinned.addParticle(p_mass, bx, by);
+    pa[i*2 + 1] = skinned.addParticle(p_mass, bx, by, false);
   }
   
   // Create constraints for surrounding particles
   for (int i = 0; i < segments; i++) {
     int next = (i + 1) % segments;
     // Outer ring
-    skinned.addConstraint(pa[i*2], pa[next*2], outer_length*0.9, outer_length, outer_length*1.1, outer_spring);
+    skinned.addConstraint(pa[i*2], pa[next*2], outer_length*0.9, outer_length, outer_length*1.1, outer_spring, true);
     // Inner ring
-    skinned.addConstraint(pa[i*2 + 1], pa[next*2 + 1], inner_length*0.9, inner_length, inner_length*1.1, outer_spring);
+    skinned.addConstraint(pa[i*2 + 1], pa[next*2 + 1], inner_length*0.9, inner_length, inner_length*1.1, outer_spring, false);
     // Join rings with structural springs
-    skinned.addConstraint(pa[i*2], pa[i*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
+    skinned.addConstraint(pa[i*2], pa[i*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring, false);
     // Cross brace
-    skinned.addConstraint(pa[i*2], pa[next*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring);
+    skinned.addConstraint(pa[i*2], pa[next*2 + 1], ring_gap*0.9, ring_gap, ring_gap*1.1, outer_spring, false);
     // Inner ring to center point, with mid point of the spring to be greater than radius for internal pressure
-    skinned.addConstraint(pa[i*2 + 1], center, inner*0.2, inner*1.5, inner*2.1, inner_spring);
+    skinned.addConstraint(pa[i*2 + 1], center, inner*0.2, inner*1.5, inner*2.1, inner_spring, false);
   }
   
   blobs.add(skinned);
-}
-
-// Blob with every particle connected to every other particle
-void addDenseBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
-{
-  float min_ratio = min/mid;
-  float max_ratio = max/mid;
-  float angle_step = 2.0 * PI / float(segments);
-  float seg_length = 2.0 * mid * sin(angle_step/2.0);
-  ParticleSystem dense = new ParticleSystem(t_size);
-  
-  Particle[] pa = new Particle[segments];
-  // Create surrounding particles
-  for (int i = 0; i < segments; i++) {
-    float angle = i * angle_step;
-    float bx = x + mid * cos(angle);
-    float by = y + mid * sin(angle);
-    pa[i] = dense.addParticle(p_mass, bx, by);
-  }
-  
-  // Create constraints for surrounding particles
-  for (int i = 0; i < segments; i++) {
-    for (int j = 0; j < segments; j++) {
-      if (i != j) {
-        PVector i2j = PVector.sub(pa[i].pos, pa[j].pos);
-        float distance = i2j.mag();
-        // Find ratio of particle distance to segment length
-        float dist =  distance / seg_length;
-        // Add constraint to all other points
-        dense.addConstraint(pa[i], pa[j], dist*seg_length*min_ratio, dist*seg_length, dist*seg_length*max_ratio, kspring);
-      }
-    }
-  }
-  
-  blobs.add(dense);
 }
 
 // Similar construction as Gish, same as Braced but also connected to opposite particle
@@ -225,7 +190,7 @@ void addTarBlob(int segments, float x, float y, float min, float mid, float max,
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = tar.addParticle(p_mass, bx, by);
+    pa[i] = tar.addParticle(p_mass, bx, by, true);
   }
   
   // Create constraints for surrounding particles
@@ -233,12 +198,12 @@ void addTarBlob(int segments, float x, float y, float min, float mid, float max,
     int next = (i + 1) % segments;
     int next1 = (i + 2) % segments;
     // To next point
-    tar.addConstraint(pa[i], pa[next], seg_length*0.8, seg_length, seg_length*1.2, kspring);
+    tar.addConstraint(pa[i], pa[next], seg_length*0.8, seg_length, seg_length*1.2, kspring, true);
     // To next next point
-    tar.addConstraint(pa[i], pa[next1], seg_length*0.1, seg_length2, seg_length2*2.1, kspring);
+    tar.addConstraint(pa[i], pa[next1], seg_length*0.1, seg_length2, seg_length2*2.1, kspring, false);
     // To opposite point
     if (i < segments/2) { 
-      tar.addConstraint(pa[i], pa[i + segments/2], min, mid*2.0, max, kspring);
+      tar.addConstraint(pa[i], pa[i + segments/2], min, mid*2.0, max, kspring, false);
     }
   }
   

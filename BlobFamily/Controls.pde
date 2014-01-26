@@ -59,8 +59,7 @@ void keyPressed() {
     //if (key == '5') addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 10);
     //if (key == '6') addSkinnedBlob(40, width/2, height/2, 50, 65, 10, 20);
     //if (key == '7') addSkinnedBlob(80, width/2, height/2, 50, 60, 10, 20);
-    if (key == '5') addDenseBlob(10, width/2, height/2, 10, 100, 500, 10);
-    if (key == '6') addTarBlob(40, width/2, height/2, 20, 100, 300, 10);
+    if (key == '5') addTarBlob(40, width/2, height/2, 20, 100, 300, 10);
 }
 
 void keyReleased() {
