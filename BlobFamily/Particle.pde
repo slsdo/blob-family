@@ -32,7 +32,7 @@ class Particle
 
     // Keyboard input
     if (keys[0]) force.add(new PVector(0, -60.0, 0)); // Up
-    if (keys[1]) force.add(new PVector(-60.0, 0, 0)); // Left
+    if (keys[1]) force.add(new PVector(-100.0, 0, 0)); // Left
     if (keys[2]) force.add(new PVector(0, 60.0, 0)); // Down
     if (keys[3]) force.add(new PVector(60.0, 0, 0)); // Right
 

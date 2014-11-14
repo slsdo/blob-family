@@ -10,6 +10,7 @@ float f_friction = 1.0; // Friction force
 float f_max = 5000.0; // Max force
 float p_mass = 1.0; // Particle mass
 int relax_iter = 4; // Relaxation iteration
+int ground_h = 100; // Height of ground
 boolean DEBUG = false;
 boolean STRUCT = true;
 boolean enable_gravity = false; // Toggle gravity
@@ -17,15 +18,15 @@ boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
 PVector gravity = new PVector(0, 80.0, 0); // Gravity vector
 ArrayList<ParticleSystem> blobs;
-Level lv;
+Ground ground;
 
 void setup()
 {
   size(800, 600);
   background(255, 255, 255);
-  
-  lv = new Level();
-  lv.initWallSimple();
+
+  ground = new Ground();
+  ground.init();
 
   blobs = new ArrayList<ParticleSystem>();
 }
@@ -33,7 +34,7 @@ void setup()
 void draw()
 {
   background(255, 255, 255);
-  lv.render();
+  ground.render();
   
   int bsize = blobs.size();
   for (int i = 0; i < bsize; i++) {
@@ -54,5 +55,4 @@ void draw()
 PVector vmin(PVector v1, PVector v2) { return new PVector(min(v1.x, v2.x), min(v1.y, v2.y), min(v1.z, v2.z)); }
 PVector vmax(PVector v1, PVector v2) { return new PVector(max(v1.x, v2.x), max(v1.y, v2.y), max(v1.z, v2.z)); }
 float dist2(PVector v1, PVector v2) { return ((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y) + (v1.z - v2.z)*(v1.z - v2.z)); }
-
 

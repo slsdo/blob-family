@@ -42,26 +42,6 @@ void addTest3P()
   blobs.add(test);
 }
 
-void addBox()
-{
-  ParticleSystem box = new ParticleSystem(t_size);
-  
-  Particle p1 = box.addParticle(1, 100, 100, true);
-  Particle p2 = box.addParticle(1, 150, 100, true);
-  Particle p3 = box.addParticle(1, 100, 150, true);
-  Particle p4 = box.addParticle(1, 150, 150, true);
-  
-  // Create constraints for surrounding particles
-  box.addConstraint(p1, p2, 50, true);
-  box.addConstraint(p3, p4, 50, true);
-  box.addConstraint(p1, p3, 50, true);
-  box.addConstraint(p2, p4, 50, true);
-  box.addConstraint(p2, p3, sqrt(50*50+50*50), false);
-  box.addConstraint(p1, p4, sqrt(50*50+50*50), false);
-  
-  blobs.add(box);
-}
-
 // Simple spherical blob with a center particle and a circle of particles around it
 void addVerletBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
 {

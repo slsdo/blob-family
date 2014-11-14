@@ -47,9 +47,8 @@ void keyPressed() {
     if (key == 'd') DEBUG = !DEBUG; // Debug view
     if (key == ' ') blobs = new ArrayList(); // Reset blobs
 
-    if (key == '1') addBox();
     //if (key == '1') addTest2P();
-    //if (key == '1') addTest3P();
+    if (key == '1') addTest3P();
     if (key == '2') addVerletBlob(30, width/2, height/2, 80, 120, 150, 10); // Big verlet
     //if (key == '2') addVerletBlob(40, width/2, height/2, 20, 50, 80, 20); // Small verlet
     if (key == '3') addBracedBlob(10, width/2, height/2, 80, 120, 150, 10); // Big braced

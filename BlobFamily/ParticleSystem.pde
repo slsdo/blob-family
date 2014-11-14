@@ -3,7 +3,6 @@ class ParticleSystem
 {
   ArrayList<Particle> particles; // Particles
   ArrayList<Constraint> constraints; // Constraint between particles
-  Collision col; // Collision info
   float totalmass; // Total mass
   float timestep; // Time step
 
@@ -11,7 +10,6 @@ class ParticleSystem
   ParticleSystem(float t) {
     particles = new ArrayList<Particle>();
     constraints = new ArrayList<Constraint>();
-    col = new Collision();
     totalmass = 0;
     timestep = t;
   }
@@ -22,7 +20,6 @@ class ParticleSystem
     p.setPos(x, y); // Set particle position
     particles.add(p);
     totalmass += m; // Accumulate blob mass
-    if (collide) col.vertices.add(p); // Watch particle for collisions
     return p;
   }
 
@@ -35,7 +32,6 @@ class ParticleSystem
     // Store constraints acting on the particle
     p1.addLink(c);
     p2.addLink(c);
-    if (collide) col.edges.add(c); // Watch particle for collisions
   }
 
   // Create semi-rigid constraint between two particles
@@ -47,7 +43,6 @@ class ParticleSystem
     // Store constraints acting on the particle
     p1.addLink(c);
     p2.addLink(c);
-    if (collide) col.edges.add(c); // Watch particle for collisions
   }
 
   // Step through time iteration
