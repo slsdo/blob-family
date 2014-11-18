@@ -5,6 +5,7 @@ class Particle
   PVector pos; // Current position
   PVector force;
   float mass; // Size of particle
+  float rad; // Radius
   ArrayList<Constraint> links; // Constraint between particles
   boolean drag; // Mouse drag
 
@@ -13,6 +14,7 @@ class Particle
     pos = new PVector(0, 0, 0);
     force = new PVector(0, 0, 0);
     mass = m;
+    rad = mass*10;
     links = new ArrayList<Constraint>();
     drag = false;
   }

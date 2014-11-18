@@ -5,6 +5,7 @@ class ParticleSystem
   ArrayList<Constraint> constraints; // Constraint between particles
   float totalmass; // Total mass
   float timestep; // Time step
+  float size; // Blob size
 
   // Initialize system of particles
   ParticleSystem(float t) {
@@ -15,7 +16,7 @@ class ParticleSystem
   }
 
   // Add particle to the blob
-  Particle addParticle(float m, float x, float y, boolean collide) {
+  Particle addParticle(float m, float x, float y) {
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
     particles.add(p);
@@ -24,7 +25,7 @@ class ParticleSystem
   }
 
   // Create rigid constraint between two particles
-  void addConstraint(Particle p1, Particle p2, float len, boolean collide) {
+  void addConstraint(Particle p1, Particle p2, float len) {
     Constraint c = new Constraint();
     c.initRigid(p1, p2, len);
     constraints.add(c);
@@ -35,7 +36,7 @@ class ParticleSystem
   }
 
   // Create semi-rigid constraint between two particles
-  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force, boolean collide) {
+  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force) {
     Constraint c = new Constraint();
     c.initSemiRigid(p1, p2, min, mid, max, force);
     constraints.add(c);
@@ -43,6 +44,10 @@ class ParticleSystem
     // Store constraints acting on the particle
     p1.addLink(c);
     p2.addLink(c);
+  }
+  
+  void setSize(float s) {
+    size = s;
   }
 
   // Step through time iteration
@@ -102,7 +107,7 @@ class ParticleSystem
     for (int i = 0; i < n; i++) {
       Particle p = particles.get(i);
       // Project points outside of obstacle during border collision
-      worldBoundCollision(p);
+      detectCollision(p);
     }
   }
 
@@ -112,7 +117,18 @@ class ParticleSystem
     for (int i = 0; i < psize; i++) {
       Particle p = particles.get(i);
       
-      if (DEBUG || STRUCT) {
+      // Find local box for rendering metaball
+      for (int x = floor(p.pos.x - size); x < ceil(p.pos.x + size); x++) {
+        for (int y = floor(p.pos.y - size); y < ceil(p.pos.y + size); y++) {
+          int index = x + y*width;
+          
+          if (index >= 0 && index < screen_size) {
+            metabox[index] = 1; 
+          }
+        }
+      }
+      
+      if (DEBUG || show_struct) {
         // Mouse drag force
         if (p.drag) {
           PVector m = new PVector(mouseX, mouseY);
@@ -125,6 +141,8 @@ class ParticleSystem
         strokeWeight(2);
         ellipse(p.pos.x, p.pos.y, p.mass, p.mass);
         strokeWeight(1);
+        
+        if (DEBUG) rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
       }
     }
     

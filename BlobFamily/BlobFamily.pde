@@ -1,19 +1,24 @@
 /*
- Blob Family - v0.0.6 - 2014/01/22
+ Blob Family - v0.5.0 - 2014/11/18
  */
 
 final int RIGID = 1; // Rigid constraint
 final int SEMI_RIGID = 2; // Semi-Rigid constraint
 
 float t_size = 0.03; // Time step
-float f_friction = 1.0; // Friction force
+float f_friction = 0.5; // Friction force
 float f_max = 5000.0; // Max force
 float p_mass = 1.0; // Particle mass
 int relax_iter = 4; // Relaxation iteration
 int ground_h = 100; // Height of ground
+int[] metabox; // Metaball bounding box
+int screen_size;
+int metaball_band = 6;
+int metaball_size = 10;
 boolean DEBUG = false;
-boolean STRUCT = true;
-boolean enable_gravity = false; // Toggle gravity
+boolean show_struct = true;
+boolean enable_metaball = false;
+boolean enable_gravity = true; // Toggle gravity
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
 PVector gravity = new PVector(0, 80.0, 0); // Gravity vector
@@ -24,6 +29,8 @@ void setup()
 {
   size(800, 600);
   background(255, 255, 255);
+  screen_size = width*height;
+  metabox = new int[screen_size];
 
   ground = new Ground();
   ground.init();
@@ -36,12 +43,18 @@ void draw()
   background(255, 255, 255);
   ground.render();
   
+  // Reset metaball bounding box
+  for (int i = 0; i < screen_size; i++) {
+    metabox[i] = 0;
+  }
+  
   int bsize = blobs.size();
   for (int i = 0; i < bsize; i++) {
     ParticleSystem b = blobs.get(i);
     b.update();
     b.render();
   }
+  if (enable_metaball) metaBall(); // Add metaball
   
   // Display framerate
   if (DEBUG) {
