@@ -1,14 +1,17 @@
 
 class ParticleSystem
 {
-  ArrayList blob; // Particles
+  ArrayList<Particle> particles; // Particles
+  ArrayList<Constraint> constraints; // Constraint between particles
   float totalmass; // Total mass
   float timestep; // Time step
+  float size; // Blob size
 
   // Initialize system of particles
   ParticleSystem(float t) {
-    blob = new ArrayList();
-    totalmass = 0.0;
+    particles = new ArrayList<Particle>();
+    constraints = new ArrayList<Constraint>();
+    totalmass = 0;
     timestep = t;
   }
 
@@ -16,101 +19,116 @@ class ParticleSystem
   Particle addParticle(float m, float x, float y) {
     Particle p = new Particle(m);
     p.setPos(x, y); // Set particle position
-    blob.add(p);
+    particles.add(p);
     totalmass += m; // Accumulate blob mass
     return p;
   }
 
-  // Step through time iteration
-  void update() {
-    int n = blob.size(); // Cache arraylist size
-    accumulate(n); // Force Accumulator
-    integrate(n); // Verlet Integration
-    constraints(n); // Satisfy Constraints
-    collision(n); // Collision Detection
+  // Create rigid constraint between two particles
+  void addConstraint(Particle p1, Particle p2, float len) {
+    Constraint c = new Constraint();
+    c.initRigid(p1, p2, len);
+    constraints.add(c);
+    
+    // Store constraints acting on the particle
+    p1.addLink(c);
+    p2.addLink(c);
   }
 
-  void accumulate(int n) {
-    for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+  // Create semi-rigid constraint between two particles
+  void addConstraint(Particle p1, Particle p2, float min, float mid, float max, float force) {
+    Constraint c = new Constraint();
+    c.initSemiRigid(p1, p2, min, mid, max, force);
+    constraints.add(c);
+    
+    // Store constraints acting on the particle
+    p1.addLink(c);
+    p2.addLink(c);
+  }
+  
+  void setSize(float s) {
+    size = s;
+  }
 
-      p.force.set(0.0, 0.0); // Reset force
+  // Step through time iteration
+  void update() {
+    updateJsZ(); // PVector.set() fix for JS mode
+    updateForce(); // Force Accumulator
+    updateVerlet(); // Verlet Integration
+    updateCollision(); // Collision Detection
+    updateConstraint(); // Satisfy Constraints
+  }
 
-      // Apply gravity if enabled
-      if (enable_gravity) p.force.add(PVector.mult(gravity, p.mass));
-
-      // Keyboard input
-      if (keys[0]) p.force.add(new PVector(0.0, -60.0)); // Up
-      if (keys[1]) p.force.add(new PVector(-60.0, 0.0)); // Left
-      if (keys[2]) p.force.add(new PVector(0.0, 60.0)); // Down
-      if (keys[3]) p.force.add(new PVector(60.0, 0.0)); // Right
-
-      // Gather forces from all connected constraints
-      int segments = p.constraints.size();
-      for (int j = 0; j < segments; j++) {
-        Constraint c = (Constraint) p.constraints.get(j);
-        p.force.add(c.accumulateForce(p));
-      }
-      
-      p.force.limit(f_max); // Limit force in case of emergency
-
-      // Dragged around by mouse
-      if (p.drag) {
-        PVector m = new PVector(mouseX, mouseY);
-        p.force.add(PVector.mult(PVector.sub(m, p.pos), 500));
-        //p.pos.set(m);
-      }
-
-      if (DEBUG) {
-        // Project force
-        stroke(0, 204, 0);
-        line(p.pos.x, p.pos.y, p.pos.x + p.force.x*0.1, p.pos.y + p.force.y*0.1);
-      }
+  // In JS mode PVector.set() sets z to NaN if it's 0, this fixes it   
+  void updateJsZ() {
+    int psize = particles.size(); // Cache arraylist size
+    for (int i = 0; i < psize; i++) {
+      Particle p = particles.get(i);
+      p.pos.z = 0;
     }
   }
 
-  void integrate(int n) {
-    for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+  void updateForce() {
+    int psize = particles.size(); // Cache arraylist size
+    for (int i = 0; i < psize; i++) {
+      Particle p = particles.get(i);
+      p.accumulateForces();
+    }
+  }
+
+  void updateVerlet() {
+    int psize = particles.size(); // Cache arraylist size
+    for (int i = 0; i < psize; i++) {
+      Particle p = particles.get(i);
       p.integrateVerlet(timestep);
     }
   }
 
-  void constraints(int n) {
+  void updateConstraint() {
+    int csize = constraints.size(); // Cache arraylist size
     // Relaxation loop to avoid collapse of the spring mass structure
     for (int iter = 0; iter < relax_iter; iter++) {
-      for (int i = 0; i < n; i++) {
-        Particle p = (Particle) blob.get(i);
-        // Iterate through all connected constraints
-        int segments = p.constraints.size();
-        for (int j = 0; j < segments; j++) {
-          Constraint c = (Constraint) p.constraints.get(j);
-          c.satisfyConstraints(p);
-        }
+      // Iterate through all connected constraints
+      for (int i = 0; i < csize; i++) {
+        Constraint c = constraints.get(i);
+        c.satisfyConstraint();
       }
     }
     
     // lock particle 0
     if (DEBUG && d_lock1) {
-      Particle p1 = (Particle) blob.get(0);
+      Particle p1 = particles.get(0);
       p1.pos.set(p1.pos0.x, p1.pos0.y);
     }
   }
 
-  void collision(int n) {
+  void updateCollision() {
+    int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+      Particle p = particles.get(i);
       // Project points outside of obstacle during border collision
-      worldBoundCollision(p);
+      detectCollision(p);
     }
   }
 
   void render() {
-    int n = blob.size();
-    for (int i = 0; i < n; i++) {
-      Particle p = (Particle) blob.get(i);
+    int psize = particles.size();
+    // Render particles
+    for (int i = 0; i < psize; i++) {
+      Particle p = particles.get(i);
       
-      if (DEBUG || STRUCT) {
+      // Find local box for rendering metaball
+      for (int x = floor(p.pos.x - size); x < ceil(p.pos.x + size); x++) {
+        for (int y = floor(p.pos.y - size); y < ceil(p.pos.y + size); y++) {
+          int index = x + y*width;
+          
+          if (index >= 0 && index < screen_size) {
+            metabox[index] = 1; 
+          }
+        }
+      }
+      
+      if (DEBUG || show_struct) {
         // Mouse drag force
         if (p.drag) {
           PVector m = new PVector(mouseX, mouseY);
@@ -124,67 +142,27 @@ class ParticleSystem
         ellipse(p.pos.x, p.pos.y, p.mass, p.mass);
         strokeWeight(1);
         
-        // Iterate through all connected constraints
-        stroke(0, 0, 0);
-        int segments = p.constraints.size();
-        for (int j = 0; j < segments; j++) {
-          Constraint c = (Constraint) p.constraints.get(j);
-          // Constraint pressure
-          if (DEBUG) {
-            PVector normal = new PVector(-(c.neighbor.pos.y - p.pos.y), (c.neighbor.pos.x - p.pos.x));
-            normal.mult(0.1);
-            stroke(c.d_color);
-            line(c.d_pt.x + normal.x, c.d_pt.y + normal.y, c.d_pt.x + -1*normal.x, c.d_pt.y + -1*normal.y);
-          }
-          // Constraint between particles
-          stroke(#666666);
-          line(p.pos.x, p.pos.y, c.neighbor.pos.x, c.neighbor.pos.y);
-        }
+        if (DEBUG) rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
       }
     }
-  }
-}
-
-class Particle
-{
-  PVector pos0; // Previous position
-  PVector pos; // Current position
-  PVector force;
-  float mass; // Size of particle
-  ArrayList constraints; // Constraint between particles
-  boolean drag; // Mouse drag
-
-  Particle(float m) {
-    pos0 = new PVector(0.0, 0.0);
-    pos = new PVector(0.0, 0.0);
-    force = new PVector(0.0, 0.0);
-    mass = m;
-    constraints = new ArrayList();
-    drag = false;
-  }
-
-  // Set particle position
-  void setPos(float x, float y) {
-    pos0.set(x, y);
-    pos.set(x, y);
-  }
-
-  // Verlet integration
-  void integrateVerlet(float t) {
-    // posT = pos1
-    PVector temp = new PVector();
-    temp = pos.get();
-    // pos1 += (pos1 - pos0) + force/mass*t*t
-    pos = PVector.add(pos, PVector.add(PVector.sub(pos, pos0), PVector.mult(PVector.div(force, mass), (t*t))));
-    // pos0 = posT
-    pos0 = temp.get();
-  }
-
-  // Add semi-rigid constraint
-  void addSemiRigid(Particle p, float min, float mid, float max, float force) {
-    Constraint c = new Constraint();
-    c.initSemiRigid(p, min, mid, max, force);
-    constraints.add(c);
+    
+    int csize = constraints.size();
+    // Render constraints
+    for (int i = 0; i < csize; i++) {
+      // Iterate through all connected constraints
+      stroke(0, 0, 0);
+      Constraint c = (Constraint) constraints.get(i);
+      // Constraint pressure
+      if (DEBUG) {
+        PVector normal = new PVector(c.p1.pos.y - c.p2.pos.y, c.p2.pos.x - c.p1.pos.x);
+        normal.mult(0.1);
+        stroke(c.d_color);
+        line(c.d_pt.x + normal.x, c.d_pt.y + normal.y, c.d_pt.x + -1*normal.x, c.d_pt.y + -1*normal.y);
+      }
+      // Constraint between particles
+      stroke(#666666);
+      line(c.p1.pos.x, c.p1.pos.y, c.p2.pos.x, c.p2.pos.y);
+    }
   }
 }
 
