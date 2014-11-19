@@ -1,5 +1,5 @@
 /*
- Blob Family - v0.5.0 - 2014/11/18
+ Blob Family - v0.9.0 - 2014/11/19
  */
 
 final int RIGID = 1; // Rigid constraint
@@ -8,16 +8,15 @@ final int SEMI_RIGID = 2; // Semi-Rigid constraint
 float t_size = 0.03; // Time step
 float f_friction = 0.5; // Friction force
 float f_max = 5000.0; // Max force
-float p_mass = 1.0; // Particle mass
 int relax_iter = 4; // Relaxation iteration
 int ground_h = 100; // Height of ground
 int[] metabox; // Metaball bounding box
 int screen_size;
-int metaball_band = 6;
-int metaball_size = 10;
+int metaball_band = 400;
+int metaball_size = 300;
 boolean DEBUG = false;
 boolean show_struct = true;
-boolean enable_metaball = false;
+boolean enable_metaball = true;
 boolean enable_gravity = true; // Toggle gravity
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
@@ -36,6 +35,7 @@ void setup()
   ground.init();
 
   blobs = new ArrayList<ParticleSystem>();
+  
 }
 
 void draw()

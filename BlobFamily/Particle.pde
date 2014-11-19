@@ -9,12 +9,12 @@ class Particle
   ArrayList<Constraint> links; // Constraint between particles
   boolean drag; // Mouse drag
 
-  Particle(float m) {
+  Particle(float m, float r) {
     pos0 = new PVector(0, 0, 0);
     pos = new PVector(0, 0, 0);
     force = new PVector(0, 0, 0);
     mass = m;
-    rad = mass*10;
+    rad = r;
     links = new ArrayList<Constraint>();
     drag = false;
   }

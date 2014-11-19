@@ -16,8 +16,8 @@ class ParticleSystem
   }
 
   // Add particle to the blob
-  Particle addParticle(float m, float x, float y) {
-    Particle p = new Particle(m);
+  Particle addParticle(float x, float y, float m, float r) {
+    Particle p = new Particle(m, r);
     p.setPos(x, y); // Set particle position
     particles.add(p);
     totalmass += m; // Accumulate blob mass
@@ -129,6 +129,12 @@ class ParticleSystem
       }
       
       if (DEBUG || show_struct) {
+        if (DEBUG && enable_metaball) {
+          noFill();
+          stroke(#cccccc);
+          rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
+        }
+        
         // Mouse drag force
         if (p.drag) {
           PVector m = new PVector(mouseX, mouseY);
@@ -141,8 +147,6 @@ class ParticleSystem
         strokeWeight(2);
         ellipse(p.pos.x, p.pos.y, p.mass, p.mass);
         strokeWeight(1);
-        
-        if (DEBUG) rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
       }
     }
     

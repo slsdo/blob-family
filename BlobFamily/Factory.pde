@@ -5,7 +5,7 @@ void addTest1P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(100, 200, 300);
+  Particle t1 = test.addParticle(200, 300, 100, 40);
   
   // Create constraints for surrounding particles
   test.addConstraint(t1, t1, 100, 150, 200, 10);
@@ -19,8 +19,8 @@ void addTest2P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(100, 200, 300);
-  Particle t2 = test.addParticle(100, 400, 300);
+  Particle t1 = test.addParticle(200, 300, 100, 40);
+  Particle t2 = test.addParticle(400, 300, 100, 40);
   
   // Create constraints for surrounding particles
   test.addConstraint(t1, t2, 100, 150, 200, 10);
@@ -34,9 +34,9 @@ void addTest3P()
 {
   ParticleSystem test = new ParticleSystem(t_size);
   
-  Particle t1 = test.addParticle(20, 300, 300);
-  Particle t2 = test.addParticle(20, 340, 300);
-  Particle t3 = test.addParticle(20, 320, 330);
+  Particle t1 = test.addParticle(300, 300, 20, 40);
+  Particle t2 = test.addParticle(340, 300, 20, 40);
+  Particle t3 = test.addParticle(320, 330, 20, 40);
   
   // Create constraints for surrounding particles
   test.addConstraint(t1, t2, 40, 80, 100, 10);
@@ -49,14 +49,14 @@ void addTest3P()
 }
 
 // Simple spherical blob with a center particle and a circle of particles around it
-void addVerletBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+void addVerletBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
   ParticleSystem verlet = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = verlet.addParticle(p_mass, x, y);
+  Particle center = verlet.addParticle(x, y, mass, rad);
   
   Particle[] pa = new Particle[segments];
   // Create surrounding particles
@@ -64,7 +64,7 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = verlet.addParticle(p_mass, bx, by);
+    pa[i] = verlet.addParticle(bx, by, mass, rad);
   }
   
   // Create constraints for surrounding particles
@@ -76,13 +76,13 @@ void addVerletBlob(int segments, float x, float y, float min, float mid, float m
     verlet.addConstraint(pa[i], center, min, mid, max, kspring);
   }
   
-  verlet.setSize(max);
+  verlet.setSize(0.5*min + max);
   
   blobs.add(verlet);
 }
 
 // Same as simple blob with extra braces on every other point
-void addBracedBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+void addBracedBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
@@ -91,7 +91,7 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
   ParticleSystem braced = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = braced.addParticle(p_mass, x, y);
+  Particle center = braced.addParticle(x, y, mass, rad);
   
   Particle[] pa = new Particle[segments];
   // Create surrounding particles
@@ -99,7 +99,7 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = braced.addParticle(p_mass, bx, by);
+    pa[i] = braced.addParticle(bx, by, mass, rad);
   }
   
   // Create constraints for surrounding particles
@@ -114,13 +114,13 @@ void addBracedBlob(int segments, float x, float y, float min, float mid, float m
     braced.addConstraint(pa[i], center, min, mid, max, kspring);
   }
   
-  braced.setSize(max);
+  braced.setSize(0.5*min + max);
   
   blobs.add(braced);
 }
 
 // A blob with thick structural skin
-void addSkinnedBlob(int segments, float x, float y, float inner, float outer, float outer_spring, float inner_spring)
+void addSkinnedBlob(int segments, float x, float y, float mass, float rad, float inner, float outer, float outer_spring, float inner_spring)
 {
   float angle_step = 2.0 * PI / float(segments);
   float outer_length = 2.0 * outer * sin(angle_step/2.0);
@@ -129,7 +129,7 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
   ParticleSystem skinned = new ParticleSystem(t_size);
   
   // Center particle
-  Particle center = skinned.addParticle(p_mass, x, y);
+  Particle center = skinned.addParticle(x, y, mass, rad);
 
   Particle[] pa = new Particle[segments*2];
   // Create outer circle particles
@@ -140,9 +140,9 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
     float cx = x + outer * cos(angle);
     float cy = y + outer * sin(angle);
     // i*2 is outer
-    pa[i*2] = skinned.addParticle(p_mass, cx, cy);
+    pa[i*2] = skinned.addParticle(cx, cy, mass, rad);
      // i*2+1 is inner
-    pa[i*2 + 1] = skinned.addParticle(p_mass, bx, by);
+    pa[i*2 + 1] = skinned.addParticle(bx, by, mass, rad);
   }
   
   // Create constraints for surrounding particles
@@ -166,7 +166,7 @@ void addSkinnedBlob(int segments, float x, float y, float inner, float outer, fl
 }
 
 // Similar construction as Gish, same as Braced but also connected to opposite particle
-void addTarBlob(int segments, float x, float y, float min, float mid, float max, float kspring)
+void addTarBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
@@ -180,7 +180,7 @@ void addTarBlob(int segments, float x, float y, float min, float mid, float max,
     float angle = i * angle_step;
     float bx = x + mid * cos(angle);
     float by = y + mid * sin(angle);
-    pa[i] = tar.addParticle(p_mass, bx, by);
+    pa[i] = tar.addParticle(bx, by, mass, rad);
   }
   
   // Create constraints for surrounding particles
