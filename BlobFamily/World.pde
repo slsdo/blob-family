@@ -11,7 +11,7 @@ class Ground
   }
   
   void render() {
-    fill(#C5AD87);
+    fill(#c5ad87);
     rect(0, 600 - h, 800, h);
   }
 }
@@ -82,7 +82,7 @@ void metaBall() {
             float yy = p.pos.y - y;
       
             //sum += p.rad / sqrt(xx * xx + yy * yy); // Optimization: Get rid of the sqrt()
-            sum += p.rad*metaball_band / (xx * xx + yy * yy);
+            sum += p.rad*metaball_size / (xx * xx + yy * yy);
           }
           
           //float col = 255 - sum*sum*sum/metaball_band;
@@ -92,7 +92,7 @@ void metaBall() {
           int r = (argb >> 16) & 0xFF;  // Faster way of getting red(argb)
           int g = (argb >> 8) & 0xFF;   // Faster way of getting green(argb)
           int b = argb & 0xFF;          // Faster way of getting blue(argb)
-          if (sum > metaball_size) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
+          if (sum > metaball_band) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
         }
       }
     }

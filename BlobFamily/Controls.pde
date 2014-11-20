@@ -46,10 +46,10 @@ void keyPressed() {
     if (key == 's') show_struct = !show_struct; // Structural view
     if (key == 'd') DEBUG = !DEBUG; // Debug view
     if (key == 'm') enable_metaball = !enable_metaball; // Lock first particle
-    if (key == 'z') metaball_band-=10;
-    if (key == 'x') metaball_band+=10;
-    if (key == 'c') metaball_size-=10;
-    if (key == 'v') metaball_size+=10;
+    if (key == 'z') metaball_size-=10;
+    if (key == 'x') metaball_size+=10;
+    if (key == 'c') metaball_band-=10;
+    if (key == 'v') metaball_band+=10;
     if (key == ' ') blobs = new ArrayList(); // Reset blobs
 
     if (key == '1') addVerletBlob(10, width/2, height/2, 1, 40, 10, 15, 20, 10); // Small verlet

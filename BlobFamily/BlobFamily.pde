@@ -12,8 +12,8 @@ int relax_iter = 4; // Relaxation iteration
 int ground_h = 100; // Height of ground
 int[] metabox; // Metaball bounding box
 int screen_size;
-int metaball_band = 400;
-int metaball_size = 300;
+int metaball_size = 400;
+int metaball_band = 300;
 boolean DEBUG = false;
 boolean show_struct = true;
 boolean enable_metaball = true;
