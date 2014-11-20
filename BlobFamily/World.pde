@@ -11,7 +11,7 @@ class Ground
   }
   
   void render() {
-    fill(#c5ad87);
+    fill(#c4bd96);
     rect(0, 600 - h, 800, h);
   }
 }
