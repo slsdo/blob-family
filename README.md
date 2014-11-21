@@ -8,7 +8,7 @@ Instruction
 
 Basic
 - 'up/down/left/right': move blob, doing so will disable blob ai
-- 'mouse': drag blob aroundm right-click on the screen and the blob will move towards it
+- 'mouse': drag blob around, right-click on the screen and the blob will move towards it
 - 'q': enable blob ai (the blob will lazily roll around)
 - 'space': reset
 
