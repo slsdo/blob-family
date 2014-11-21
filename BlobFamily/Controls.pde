@@ -50,27 +50,27 @@ void keyPressed() {
     if (key == 'l') d_lock1 = !d_lock1; // Lock first particle
     if (key == 'd') DEBUG = !DEBUG; // Debug view
     if (key == 'm') enable_metaball = !enable_metaball; // Lock first particle
-    if (key == 'a') metaball_size -= 10;
-    if (key == 's') metaball_size += 10;
-    if (key == 'z') metaball_threshold -= 10;
-    if (key == 'x') metaball_threshold += 10;
+    if (key == 'a') for (int i = 0; i < blobs.size(); i++) { blobs.get(i).mb_size -= 10; }
+    if (key == 's') for (int i = 0; i < blobs.size(); i++) { blobs.get(i).mb_size += 10; }
+    if (key == 'z') for (int i = 0; i < blobs.size(); i++) { blobs.get(i).mb_thresh -= 10; }
+    if (key == 'x') for (int i = 0; i < blobs.size(); i++) { blobs.get(i).mb_thresh += 10; }
     if (key == 'f') show_fps = !show_fps;
     if (key == 'q') enable_ai = !enable_ai;
     if (key == ' ') blobs = new ArrayList(); // Reset blobs
 
-    if (key == '1') addVerletBlob(10, width/2, height/2, 1, 40, 10, 15, 20, 10); // Small verlet
-    if (key == '!') addVerletBlob(10, width/2, height/2, 1, 80, 20, 30, 40, 10); // Small verlet
-    if (key == '2') addBracedBlob(10, width/2, height/2, 1, 40, 10, 15, 18, 10); // Small braced
-    if (key == '@') addBracedBlob(10, width/2, height/2, 1, 80, 20, 30, 35, 10); // Big braced
-    if (key == '3') addSkinnedBlob(20, width/2, height/2, 1, 60, 40, 50, 100, 100); // Medium skinned
-    if (key == '4') addTarBlob(10, width/2, height/2, 1, 60, 5, 20, 40, 10); // Medium tar
-    if (key == '5') { enable_metaball = false; addVerletBlob(30, width/2, height/2, 1, 40, 80, 120, 150, 10); } // Big verlet
-    if (key == '6') { enable_metaball = false; addBracedBlob(20, width/2, height/2, 1, 40, 80, 120, 150, 10); } // BIG braced
-    if (key == '7') { enable_metaball = false; addSkinnedBlob(60, width/2, height/2, 1, 40, 100, 120, 10, 10); } // Big skinned
-    if (key == '8') { enable_metaball = false; addTarBlob(40, width/2, height/2, 1, 40, 20, 100, 300, 10); }
-    //if (key == 'asd') addSkinnedBlob(40, width/2, height/2, 1, 40, 50, 60, 10, 100);
-    //if (key == 'asd') addSkinnedBlob(40, width/2, height/2, 1, 40, 50, 65, 10, 10);
-    //if (key == 'asd') addSkinnedBlob(40, width/2, height/2, 1, 40, 50, 65, 10, 20);
+    if (key == '1') addVerletBlob(10, 10, 15, 20, 10, width/2, height/2, 1, 40, 300, 300); // Small verlet
+    if (key == '2') addVerletBlob(10, 20, 30, 40, 10, width/2, height/2, 1, 140, 300, 300); // Small verlet
+    if (key == '3') addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
+    if (key == '4') addBracedBlob(10, 20, 30, 35, 10, width/2, height/2, 1, 140, 300, 300); // Big braced
+    if (key == '5') addTarBlob(10, 5, 20, 40, 10, width/2, height/2, 1, 60, 300, 300); // Small tar
+    if (key == '6') addTarBlob(10, 10, 40, 80, 10, width/2, height/2, 1, 240, 300, 300); // Medium tar
+    if (key == '7') { enable_metaball = false; addVerletBlob(30, 80, 120, 150, 10, width/2, height/2, 1, 40, 300, 300); } // Big verlet
+    if (key == '8') { enable_metaball = false; addBracedBlob(20, 80, 120, 150, 10, width/2, height/2, 1, 40, 300, 300); } // BIG braced
+    if (key == '9') { enable_metaball = false; addSkinnedBlob(60, 100, 120, 10, 10, width/2, height/2, 1, 40, 300, 300); } // Big skinned
+    if (key == '0') { enable_metaball = false; addTarBlob(40, 20, 100, 300, 10, width/2, height/2, 1, 40, 300, 300); }
+    //if (key == 'asd') addSkinnedBlob(40, 50, 60, 10, 100, width/2, height/2, 1, 40, 300, 300);
+    //if (key == 'asd') addSkinnedBlob(40, 50, 65, 10, 10, width/2, height/2, 1, 40, 300, 300);
+    //if (key == 'asd') addSkinnedBlob(40, 50, 65, 10, 20, width/2, height/2, 1, 40, 300, 300);
 }
 
 void keyReleased() {

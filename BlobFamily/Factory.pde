@@ -3,7 +3,7 @@
 
 void addTest1P()
 {
-  ParticleSystem test = new ParticleSystem(t_size);
+  ParticleSystem test = new ParticleSystem(t_size, 30, 30);
   
   Particle t1 = test.addParticle(200, 300, 100, 40);
   
@@ -17,7 +17,7 @@ void addTest1P()
 
 void addTest2P()
 {
-  ParticleSystem test = new ParticleSystem(t_size);
+  ParticleSystem test = new ParticleSystem(t_size, 30, 30);
   
   Particle t1 = test.addParticle(200, 300, 100, 40);
   Particle t2 = test.addParticle(400, 300, 100, 40);
@@ -32,7 +32,7 @@ void addTest2P()
 
 void addTest3P()
 {
-  ParticleSystem test = new ParticleSystem(t_size);
+  ParticleSystem test = new ParticleSystem(t_size, 30, 30);
   
   Particle t1 = test.addParticle(300, 300, 20, 40);
   Particle t2 = test.addParticle(340, 300, 20, 40);
@@ -49,11 +49,11 @@ void addTest3P()
 }
 
 // Simple spherical blob with a center particle and a circle of particles around it
-void addVerletBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
+void addVerletBlob(int segments, float min, float mid, float max, float kspring, float x, float y, float mass, float rad, int mb_size, int mb_thresh)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
-  ParticleSystem verlet = new ParticleSystem(t_size);
+  ParticleSystem verlet = new ParticleSystem(t_size, mb_size, mb_thresh);
   
   // Center particle
   Particle center = verlet.addParticle(x, y, mass, rad);
@@ -82,13 +82,13 @@ void addVerletBlob(int segments, float x, float y, float mass, float rad, float 
 }
 
 // Same as simple blob with extra braces on every other point
-void addBracedBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
+void addBracedBlob(int segments, float min, float mid, float max, float kspring, float x, float y, float mass, float rad, int mb_size, int mb_thresh)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
   float seg_length2 = 2.0 * mid * sin(angle_step*2.0/2.0);
   float seg_length3 = 2.0 * mid * sin(angle_step*3.0/2.0);
-  ParticleSystem braced = new ParticleSystem(t_size);
+  ParticleSystem braced = new ParticleSystem(t_size, mb_size, mb_thresh);
   
   // Center particle
   Particle center = braced.addParticle(x, y, mass, rad);
@@ -120,13 +120,13 @@ void addBracedBlob(int segments, float x, float y, float mass, float rad, float 
 }
 
 // A blob with thick structural skin
-void addSkinnedBlob(int segments, float x, float y, float mass, float rad, float inner, float outer, float outer_spring, float inner_spring)
+void addSkinnedBlob(int segments, float inner, float outer, float outer_spring, float inner_spring, float x, float y, float mass, float rad, int mb_size, int mb_thresh)
 {
   float angle_step = 2.0 * PI / float(segments);
   float outer_length = 2.0 * outer * sin(angle_step/2.0);
   float inner_length = 2.0 * inner * sin(angle_step/2.0);
   float ring_gap = outer - inner;
-  ParticleSystem skinned = new ParticleSystem(t_size);
+  ParticleSystem skinned = new ParticleSystem(t_size, mb_size, mb_thresh);
   
   // Center particle
   Particle center = skinned.addParticle(x, y, mass, rad);
@@ -160,19 +160,18 @@ void addSkinnedBlob(int segments, float x, float y, float mass, float rad, float
     skinned.addConstraint(pa[i*2 + 1], center, inner*0.2, inner*1.5, inner*2.1, inner_spring);
   }
   
-  skinned.setSize(inner_length*outer_length);
+  skinned.setSize(0.2*segments*outer_length);
   
   blobs.add(skinned);
 }
 
 // Similar construction as Gish, same as Braced but also connected to opposite particle
-void addTarBlob(int segments, float x, float y, float mass, float rad, float min, float mid, float max, float kspring)
+void addTarBlob(int segments, float min, float mid, float max, float kspring, float x, float y, float mass, float rad, int mb_size, int mb_thresh)
 {
   float angle_step = 2.0 * PI / float(segments);
   float seg_length = 2.0 * mid * sin(angle_step/2.0);
   float seg_length2 = 2.0 * mid * sin(angle_step*2.0/2.0);
-  ParticleSystem tar = new ParticleSystem(t_size);
-
+  ParticleSystem tar = new ParticleSystem(t_size, mb_size, mb_thresh);
 
   Particle[] pa = new Particle[segments];
   // Create surrounding particles

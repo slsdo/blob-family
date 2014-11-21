@@ -7,11 +7,13 @@ class ParticleSystem
   float timestep; // Time step
   float size; // Blob size
   PVector target; // Random target to wander towards
-  float f_jump;
-  boolean rand_jump;
+  float f_jump; // Jumping force
+  boolean rand_jump; // Random jump flag
+  int mb_size; // Metaball size
+  int mb_thresh; // Metaball threshold
 
   // Initialize system of particles
-  ParticleSystem(float t) {
+  ParticleSystem(float t, int mbs, int mbt) {
     particles = new ArrayList<Particle>();
     constraints = new ArrayList<Constraint>();
     totalmass = 0;
@@ -20,6 +22,8 @@ class ParticleSystem
     target = new PVector(random(width), random(height - ground_h), 0);
     f_jump = -60.0;
     rand_jump = false;
+    mb_size = mbs;
+    mb_thresh = mbt;
   }
 
   // Add particle to the blob
@@ -147,7 +151,7 @@ class ParticleSystem
     // Jump randomly
     if (enable_ai) {
       rand_jump = false;
-      if (int(random(80)) < 1) {
+      if (int(random(100)) < 1) {
         rand_jump = true;
         f_jump = -800;
       }
@@ -157,7 +161,7 @@ class ParticleSystem
   // Simple world collision detection 
   void detectCollision(Particle p)
   {
-    half_mass = p.mass*0.5;
+    float half_mass = p.mass*0.5;
     
     if (checkCollision(p.pos, half_mass)) {
       PVector normal = getNormal(p.pos, half_mass);    
@@ -207,20 +211,22 @@ class ParticleSystem
       Particle p = particles.get(i);
       
       // Find local box for rendering metaball
-      for (int x = floor(p.pos.x - size); x < ceil(p.pos.x + size); x++) {
-        for (int y = floor(p.pos.y - size); y < ceil(p.pos.y + size); y++) {
-          int index = x + y*width;
-          
-          if (index >= 0 && index < screen_size) {
-            metabox[index] = 1; 
+      if (enable_metaball) {
+        for (int x = floor(p.pos.x - size); x < ceil(p.pos.x + size); x++) {
+          for (int y = floor(p.pos.y - size); y < ceil(p.pos.y + size); y++) {
+            int index = x + y*width;
+            
+            if (index >= 0 && index < screen_size) {
+              metabox[index] = 1; 
+            }
           }
         }
-      }
       
-      if (DEBUG && enable_metaball) {
-        noFill();
-        stroke(#cccccc);
-        rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
+        if (DEBUG) {
+          noFill();
+          stroke(#cccccc);
+          rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
+        }
       }
       
       if (DEBUG && enable_ai) {

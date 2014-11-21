@@ -14,8 +14,6 @@ int relax_iter = 4; // Relaxation iteration
 int[] metabox; // Metaball bounding box
 int screen_size; // Cache screen size
 int ground_h; // Ground height
-int metaball_size = 400; // Size of each metaball
-int metaball_threshold = 300; // Threshold of blob
 
 boolean DEBUG = false; // Enable debug view
 boolean show_fps = false; // Toggle FPS
@@ -53,9 +51,9 @@ void draw()
   
   int bsize = blobs.size();
   for (int i = 0; i < bsize; i++) {
-    ParticleSystem b = blobs.get(i);
-    b.update();
-    b.render();
+    ParticleSystem ps = blobs.get(i);
+    ps.update();
+    ps.render();
   }
   
   // Render metaball
@@ -73,8 +71,9 @@ void draw()
 void metaBall() {
   loadPixels();
   // Render blob metaball for each blob
-  for (int n = 0; n < blobs.size(); n++) {
-    ParticleSystem ps = blobs.get(n);
+  int bsize = blobs.size();
+  for (int i = 0; i < bsize; i++) {
+    ParticleSystem ps = blobs.get(i);
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
         int index = x + y*width;
@@ -84,14 +83,14 @@ void metaBall() {
                       
           int psize = ps.particles.size();
           // Render particles
-          for (int i = 0; i < psize; i++) {
-            Particle p = ps.particles.get(i);
+          for (int j = 0; j < psize; j++) {
+            Particle p = ps.particles.get(j);
       
             float xx = p.pos.x - x;
             float yy = p.pos.y - y;
       
             //sum += p.rad / sqrt(xx * xx + yy * yy); // Optimization: Get rid of the sqrt()
-            sum += p.rad*metaball_size / (xx * xx + yy * yy);
+            sum += p.rad*ps.mb_size / (xx * xx + yy * yy);
           }
           
           //float col = 255 - sum*sum*sum/metaball_band;
@@ -101,7 +100,7 @@ void metaBall() {
           int r = (argb >> 16) & 0xFF;  // Faster way of getting red(argb)
           int g = (argb >> 8) & 0xFF;   // Faster way of getting green(argb)
           int b = argb & 0xFF;          // Faster way of getting blue(argb)
-          if (sum > metaball_threshold) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
+          if (sum > ps.mb_thresh) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
         }
       }
     }
