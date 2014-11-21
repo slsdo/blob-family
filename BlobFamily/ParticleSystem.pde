@@ -7,6 +7,8 @@ class ParticleSystem
   float timestep; // Time step
   float size; // Blob size
   PVector target; // Random target to wander towards
+  float f_jump;
+  boolean rand_jump;
 
   // Initialize system of particles
   ParticleSystem(float t) {
@@ -14,7 +16,10 @@ class ParticleSystem
     constraints = new ArrayList<Constraint>();
     totalmass = 0;
     timestep = t;
+    size = 1;
     target = new PVector(random(width), random(height - ground_h), 0);
+    f_jump = -60.0;
+    rand_jump = false;
   }
 
   // Add particle to the blob
@@ -84,7 +89,7 @@ class ParticleSystem
     int psize = particles.size(); // Cache arraylist size
     for (int i = 0; i < psize; i++) {
       Particle p = particles.get(i);      
-      p.accumulateForces(target);
+      p.accumulateForces(this);
     }
   }
 
@@ -129,24 +134,70 @@ class ParticleSystem
     }
   }
 
-  void updateCollision() {
+  void updateCollision() { 
     f_jump = -60.0; // Update jump force
-    
+       
     int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
       Particle p = particles.get(i);
       // Project points outside of obstacle during border collision
-      p.detectCollision();
+      detectCollision(p);
     }
     
     // Jump randomly
     if (enable_ai) {
       rand_jump = false;
-      if (int(random(40)) < 1) {
+      if (int(random(80)) < 1) {
         rand_jump = true;
-        f_jump = -1000;
+        f_jump = -800;
       }
     }
+  }
+  
+  // Simple world collision detection 
+  void detectCollision(Particle p)
+  {
+    half_mass = p.mass*0.5;
+    
+    if (checkCollision(p.pos, half_mass)) {
+      PVector normal = getNormal(p.pos, half_mass);    
+      PVector movement = PVector.sub(p.pos, p.pos0);
+      float perp = movement.dot(normal);    
+      PVector parallel = PVector.sub(movement, PVector.mult(normal, perp));
+      
+      if (!checkCollision(PVector.add(p.pos0, parallel), half_mass)) {
+        p.pos = PVector.add(p.pos0, PVector.mult(parallel, f_friction));
+      }
+      else {
+        // If all else fails, just move to collision point
+        if (normal.x < 0.0) p.pos.x = half_mass;
+        else if (normal.x > 0.0) p.pos.x = width - half_mass;
+        if (normal.y < 0.0) p.pos.y = half_mass;
+        else if (normal.y > 0.0) p.pos.y = height - ground_h - half_mass;
+      }
+    }
+  }
+  
+  // Check if a collision has occured
+  boolean checkCollision(PVector pos, float half_mass)
+  {
+    // Check x/y component of particle coordinate
+    if (pos.x < half_mass || pos.x > width - half_mass ||
+        pos.y < half_mass || pos.y > height - ground_h  - half_mass) return true;
+    return false;  
+  }
+  
+  // Obtain normal of current movement direction
+  PVector getNormal(PVector pos, float half_mass)
+  {
+    PVector normal = new PVector(0.0, 0.0, 0.0);
+    // Obtain x component of current movement
+    if (pos.x < half_mass) { normal.x = -1.0; f_jump = -60; }
+    else if (pos.x > width - half_mass) { normal.x = 1.0; f_jump = -60; }
+    // Check y component of current movement, only when on the ground can jump force be large
+    if (pos.y < half_mass) { normal.y = -1.0; f_jump = 0; }
+    else if (pos.y > height - ground_h  - half_mass) { normal.y = 1.0; f_jump = -500; }
+    return normal;  
   }
 
   void render() {

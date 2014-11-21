@@ -22,7 +22,6 @@ boolean show_fps = false; // Toggle FPS
 boolean enable_metaball = true; // Toggle metaballs
 boolean enable_gravity = true; // Toggle gravity
 boolean enable_ai = false; // Toggle blob AI
-boolean rand_jump = false;
 boolean follow_m = false; // Blob will follow mouse pointer
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
