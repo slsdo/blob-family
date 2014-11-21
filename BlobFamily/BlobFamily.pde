@@ -1,6 +1,5 @@
-/*
- Blob Family - v0.9.0 - 2014/11/19
- */
+/* Blob Family - v1.0.0 - 2014/11/21
+   - by Future Data Lab | www.futuredatalab.com */
 
 final int RIGID = 1; // Rigid constraint
 final int SEMI_RIGID = 2; // Semi-Rigid constraint
