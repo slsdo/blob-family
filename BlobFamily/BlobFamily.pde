@@ -113,11 +113,11 @@ void metaBall() {
 // Initialize some blobs
 void initBlobs()
 {
-    enable_ai = true;
-    addVerletBlob(10, 10, 15, 20, 10, width/2, height/2, 1, 40, 300, 300); // Small verlet
-    addVerletBlob(10, 20, 30, 40, 10, width/2, height/2, 1, 140, 300, 300); // Big verlet
-    addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
-    addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
+  enable_ai = true;
+  addVerletBlob(10, 10, 15, 20, 10, width/2, height/2, 1, 40, 300, 300); // Small verlet
+  addVerletBlob(10, 20, 30, 40, 10, width/2, height/2, 1, 140, 300, 300); // Big verlet
+  addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
+  addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
 }
 
 // Some math functions
