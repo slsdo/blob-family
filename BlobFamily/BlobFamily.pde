@@ -35,6 +35,8 @@ void setup()
   ground_h = floor(height*0.2);
   metabox = new int[screen_size];
   blobs = new ArrayList<ParticleSystem>();
+  
+  initBlobs();
 }
 
 void draw()
@@ -100,12 +102,23 @@ void metaBall() {
           int r = (argb >> 16) & 0xFF;  // Faster way of getting red(argb)
           int g = (argb >> 8) & 0xFF;   // Faster way of getting green(argb)
           int b = argb & 0xFF;          // Faster way of getting blue(argb)
-          if (sum > ps.mb_thresh) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
+          if (sum > ps.mb_thresh) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col);
+          else if (sum < ps.mb_thresh && sum > ps.mb_thresh - 30) pixels[index] = color(150, 150, 150); // Grey border
         }
       }
     }
   }
   updatePixels();
+}
+
+// Initialize some blobs
+void initBlobs()
+{
+    enable_ai = true;
+    addVerletBlob(10, 10, 15, 20, 10, width/2, height/2, 1, 40, 300, 300); // Small verlet
+    addVerletBlob(10, 20, 30, 40, 10, width/2, height/2, 1, 140, 300, 300); // Small verlet
+    addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
+    addBracedBlob(10, 10, 15, 18, 10, width/2, height/2, 1, 40, 300, 300); // Small braced
 }
 
 // Some math functions
