@@ -8,41 +8,45 @@ final int SEMI_RIGID = 2; // Semi-Rigid constraint
 float t_size = 0.03; // Time step
 float f_friction = 0.5; // Friction force
 float f_max = 5000.0; // Max force
+float f_jump = -60.0; // Jumping force
+
 int relax_iter = 4; // Relaxation iteration
-int ground_h = 100; // Height of ground
 int[] metabox; // Metaball bounding box
-int screen_size;
-int metaball_size = 400;
-int metaball_band = 300;
-boolean DEBUG = false;
-boolean show_struct = true;
-boolean enable_metaball = true;
+int screen_size; // Cache screen size
+int ground_h; // Ground height
+int metaball_size = 400; // Size of each metaball
+int metaball_threshold = 300; // Threshold of blob
+
+boolean DEBUG = false; // Enable debug view
+boolean show_fps = false; // Toggle FPS
+boolean enable_metaball = true; // Toggle metaballs
 boolean enable_gravity = true; // Toggle gravity
+boolean enable_ai = false; // Toggle blob AI
+boolean rand_jump = false;
+boolean follow_m = false; // Blob will follow mouse pointer
 boolean[] keys = new boolean[4]; // Check key press
 boolean d_lock1 = false; // DEBUG: lock first particle
+
 PVector gravity = new PVector(0, 80.0, 0); // Gravity vector
 ArrayList<ParticleSystem> blobs;
-Ground ground;
 
 void setup()
 {
   size(800, 600);
   background(255, 255, 255);
   screen_size = width*height;
+  ground_h = floor(height*0.2);
   metabox = new int[screen_size];
-
-  ground = new Ground();
-  ground.init();
-
   blobs = new ArrayList<ParticleSystem>();
-  
 }
 
 void draw()
 {
   background(255, 255, 255);
-  ground.render();
-  
+  stroke(#555555);
+  fill(#c4bd96);
+  rect(0, height - ground_h, width, ground_h);
+
   // Reset metaball bounding box
   for (int i = 0; i < screen_size; i++) {
     metabox[i] = 0;
@@ -54,14 +58,56 @@ void draw()
     b.update();
     b.render();
   }
-  if (enable_metaball) metaBall(); // Add metaball
+  
+  // Render metaball
+  if (enable_metaball) metaBall();
   
   // Display framerate
-  if (DEBUG) {
+  if (DEBUG || show_fps) {
     fill(0, 102, 153);
     text(frameRate, 10, 25);
     fill(0, 0, 0);
   }
+}
+
+// Render blob using metaball 
+void metaBall() {
+  loadPixels();
+  // Render blob metaball for each blob
+  for (int n = 0; n < blobs.size(); n++) {
+    ParticleSystem ps = blobs.get(n);
+    for (int x = 0; x < width; x++) {
+      for (int y = 0; y < height; y++) {
+        int index = x + y*width;
+        // If within metaball bounding box, draw blob
+        if (metabox[index] == 1 && !DEBUG) {
+          float sum = 0.0;
+                      
+          int psize = ps.particles.size();
+          // Render particles
+          for (int i = 0; i < psize; i++) {
+            Particle p = ps.particles.get(i);
+      
+            float xx = p.pos.x - x;
+            float yy = p.pos.y - y;
+      
+            //sum += p.rad / sqrt(xx * xx + yy * yy); // Optimization: Get rid of the sqrt()
+            sum += p.rad*metaball_size / (xx * xx + yy * yy);
+          }
+          
+          //float col = 255 - sum*sum*sum/metaball_band;
+          float col = 255 - sum;
+          color argb = pixels[index];
+          int a = (argb >> 24) & 0xFF;
+          int r = (argb >> 16) & 0xFF;  // Faster way of getting red(argb)
+          int g = (argb >> 8) & 0xFF;   // Faster way of getting green(argb)
+          int b = argb & 0xFF;          // Faster way of getting blue(argb)
+          if (sum > metaball_threshold) pixels[index] = color(0.8*r + col, 0.8*g + col, 0.8*b + col, col);
+        }
+      }
+    }
+  }
+  updatePixels();
 }
 
 // Some math functions

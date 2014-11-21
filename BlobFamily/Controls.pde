@@ -1,5 +1,5 @@
 
-void mousePressed () {
+void mousePressed() {
   // Get mouse position
   PVector m = new PVector(mouseX, mouseY);  
   // Look for a particle the mouse is in
@@ -16,6 +16,8 @@ void mousePressed () {
       }
     }
   }
+  // When mouse is pressed, blob will move toward the mouse
+  if (!follow_m) follow_m = true;
 }
 
 void mouseReleased() {
@@ -32,6 +34,7 @@ void mouseReleased() {
       }
     }
   }
+  follow_m = false;
 }
 
 void keyPressed() {
@@ -40,16 +43,19 @@ void keyPressed() {
     else if (key == CODED && keyCode == LEFT) keys[1] = true;
     else if (key == CODED && keyCode == DOWN) keys[2] = true;
     else if (key == CODED && keyCode == RIGHT) keys[3] = true;
+    
+    if (key == CODED && enable_ai) enable_ai = !enable_ai; // User move overrides AI
 
     if (key == 'g') enable_gravity = !enable_gravity; // Enable gravity
     if (key == 'l') d_lock1 = !d_lock1; // Lock first particle
-    if (key == 's') show_struct = !show_struct; // Structural view
     if (key == 'd') DEBUG = !DEBUG; // Debug view
     if (key == 'm') enable_metaball = !enable_metaball; // Lock first particle
-    if (key == 'z') metaball_size-=10;
-    if (key == 'x') metaball_size+=10;
-    if (key == 'c') metaball_band-=10;
-    if (key == 'v') metaball_band+=10;
+    if (key == 'a') metaball_size -= 10;
+    if (key == 's') metaball_size += 10;
+    if (key == 'z') metaball_threshold -= 10;
+    if (key == 'x') metaball_threshold += 10;
+    if (key == 'f') show_fps = !show_fps;
+    if (key == 'q') enable_ai = !enable_ai;
     if (key == ' ') blobs = new ArrayList(); // Reset blobs
 
     if (key == '1') addVerletBlob(10, width/2, height/2, 1, 40, 10, 15, 20, 10); // Small verlet

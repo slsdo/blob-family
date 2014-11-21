@@ -6,6 +6,7 @@ class ParticleSystem
   float totalmass; // Total mass
   float timestep; // Time step
   float size; // Blob size
+  PVector target; // Random target to wander towards
 
   // Initialize system of particles
   ParticleSystem(float t) {
@@ -13,6 +14,7 @@ class ParticleSystem
     constraints = new ArrayList<Constraint>();
     totalmass = 0;
     timestep = t;
+    target = new PVector(random(width), random(height - ground_h), 0);
   }
 
   // Add particle to the blob
@@ -69,11 +71,36 @@ class ParticleSystem
   }
 
   void updateForce() {
+    PVector movement = new PVector(0, 0, 0);
+    // Move randomly
+    if (enable_ai) target = updateTarget();
+    
+    if (DEBUG && enable_ai) {
+      stroke(255, 0, 0);
+      fill(255, 0, 0);
+      ellipse(target.x, target.y, 10, 10);
+    }
+    
     int psize = particles.size(); // Cache arraylist size
     for (int i = 0; i < psize; i++) {
-      Particle p = particles.get(i);
-      p.accumulateForces();
+      Particle p = particles.get(i);      
+      p.accumulateForces(target);
     }
+  }
+
+  // Returns a new random wandering direction
+  PVector updateTarget()
+  {
+    PVector vel = new PVector(random(-10, 10), random(-2, 2), 0); // Random velocity vector
+    PVector steer = PVector.add(target, vel); // Determine new movement
+  
+    // If out-of-bound
+    if (steer.x < 0) steer.x += width;
+    else if (steer.x > width) steer.x -= width;
+    if (steer.y < 0) steer.y += height - ground_h;
+    else if (steer.y > height - ground_h) steer.y -= height - ground_h;
+    
+    return steer;
   }
 
   void updateVerlet() {
@@ -103,11 +130,22 @@ class ParticleSystem
   }
 
   void updateCollision() {
+    f_jump = -60.0; // Update jump force
+    
     int n = particles.size(); // Cache arraylist size
     for (int i = 0; i < n; i++) {
       Particle p = particles.get(i);
       // Project points outside of obstacle during border collision
-      detectCollision(p);
+      p.detectCollision();
+    }
+    
+    // Jump randomly
+    if (enable_ai) {
+      rand_jump = false;
+      if (int(random(40)) < 1) {
+        rand_jump = true;
+        f_jump = -1000;
+      }
     }
   }
 
@@ -128,26 +166,29 @@ class ParticleSystem
         }
       }
       
-      if (DEBUG || show_struct) {
-        if (DEBUG && enable_metaball) {
-          noFill();
-          stroke(#cccccc);
-          rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
-        }
-        
-        // Mouse drag force
-        if (p.drag) {
-          PVector m = new PVector(mouseX, mouseY);
-          stroke(204, 0, 0);
-          line(p.pos.x, p.pos.y, m.x, m.y);
-        }
-        else stroke(0, 102, 153);        
-        // Particle
+      if (DEBUG && enable_metaball) {
         noFill();
-        strokeWeight(2);
-        ellipse(p.pos.x, p.pos.y, p.mass, p.mass);
-        strokeWeight(1);
+        stroke(#cccccc);
+        rect(p.pos.x - size*0.5, p.pos.y - size*0.5, size, size);
       }
+      
+      if (DEBUG && enable_ai) {
+        stroke(255, 0, 255, 50);
+        line(p.pos.x, p.pos.y, target.x, target.y);
+      }
+      
+      // Mouse drag force
+      if (p.drag) {
+        PVector m = new PVector(mouseX, mouseY);
+        stroke(255, 0, 255);
+        line(p.pos.x, p.pos.y, m.x, m.y);
+      }
+      else stroke(0, 102, 153);  
+      // Particle
+      noFill();
+      strokeWeight(2);
+      ellipse(p.pos.x, p.pos.y, p.mass*5, p.mass*5);
+      strokeWeight(1);
     }
     
     int csize = constraints.size();
