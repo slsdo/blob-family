@@ -28,7 +28,7 @@ ArrayList<ParticleSystem> blobs;
 
 void setup()
 {
-  size(800, 600);
+  size(600, 400);
   background(255, 255, 255);
   screen_size = width*height;
   ground_h = floor(height*0.2);
