@@ -6,13 +6,13 @@ A family of physically-based blobs. Soft body simulation using a Verlet-based ma
 Instruction
 -----------
 
-###### Basic
+Basic
 - 'up/down/left/right': move blob, doing so will disable blob ai
 - 'mouse': drag blob aroundm right-click on the screen and the blob will move towards it
 - 'q': enable blob ai (the blob will lazily roll around)
 - 'space': reset
 
-###### Debug
+Debug
 - 'd': display debug info
 - 'f': toggle fps info
 - 'g': toggle gravity
@@ -23,7 +23,7 @@ Instruction
 - 'z': decrease metaball render threshold
 - 'x': increase metaball render threshold
 
-###### Create blob
+Create blob
 - '1': create a small simple blob
 - '2': create a big simple blob
 - '3': create a small braced blob
