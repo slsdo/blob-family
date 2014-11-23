@@ -1,5 +1,5 @@
 /*
- Blob Family - v0.9.0 - 2014/11/19
+ Blob Family - v1.0.0 - 2014/11/23
  */
 
 final int RIGID = 1; // Rigid constraint
@@ -29,7 +29,7 @@ ArrayList<ParticleSystem> blobs;
 
 void setup()
 {
-  size(800, 600);
+  size(600, 400);
   background(255, 255, 255);
   screen_size = width*height;
   ground_h = floor(height*0.2);
