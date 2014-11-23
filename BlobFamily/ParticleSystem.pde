@@ -237,7 +237,7 @@ class ParticleSystem
       // Mouse drag force
       if (p.drag) {
         PVector m = new PVector(mouseX, mouseY);
-        stroke(255, 0, 255);
+        stroke(255, 0, 0);
         line(p.pos.x, p.pos.y, m.x, m.y);
       }
       else stroke(0, 102, 153);  
@@ -253,7 +253,7 @@ class ParticleSystem
     for (int i = 0; i < csize; i++) {
       // Iterate through all connected constraints
       stroke(0, 0, 0);
-      Constraint c = (Constraint) constraints.get(i);
+      Constraint c = constraints.get(i);
       // Constraint pressure
       if (DEBUG) {
         PVector normal = new PVector(c.p1.pos.y - c.p2.pos.y, c.p2.pos.x - c.p1.pos.x);
