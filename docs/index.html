@@ -1,0 +1,545 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html, charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Blob Family | slsdo</title>
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+    <script src="js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="js/syntaxhighlighter/shCore.js"></script>
+    <script type="text/javascript" src="js/syntaxhighlighter/shBrushP5.js"></script>
+    <script src="js/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/sticky.js"></script>
+    <script type="text/javascript" src="js/progressbar.js"></script>
+    <!--[if lt IE 9]>
+        <script type="text/javascript">alert("Your browser does not support the canvas tag.");</script>
+    <![endif]-->
+    <script src="js/processing.js" type="text/javascript"></script>
+
+    <link href="js/syntaxhighlighter/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="js/syntaxhighlighter/shThemeDefault.css" rel="stylesheet" type="text/css" />
+    <style>
+        @font-face {
+            font-family: 'OpenBaskerville';
+            src: url('font/OpenBaskerville-0.0.75.eot'); /* IE9 Compat Modes */
+            src: url('font/OpenBaskerville-0.0.75.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+                 url('font/OpenBaskerville-0.0.75.woff') format('woff'), /* Modern Browsers */
+                 url('font/OpenBaskerville-0.0.75.ttf')  format('truetype'), /* Safari, Android, iOS */
+                 url('font/OpenBaskerville-0.0.75.svg#OpenBaskerville') format('svg'); /* Legacy iOS */
+        }
+
+        body {
+        }
+        a {
+            border-bottom: 1px dotted #ccc;
+            color: #58b;
+            text-decoration: none;
+        }
+        a:hover {
+            border-bottom: 1px dashed #eab03f;
+            color: #777;
+        }
+        h1 {
+            font: bold 52px/12px "OpenBaskerville", georgia, serif;
+            min-width: 280px;
+        }
+        h2 {
+            color: #811;
+            font: normal 28px/32px sans-serif;
+            margin: 40px 0 10px;
+        }
+        .hash {
+            color: #a6a6a6;
+        }
+        h3 {
+            color: #a6a6a6;
+            font: normal 22px/32px sans-serif;
+            margin-bottom: 0;
+        }
+        header {
+            border-bottom: 3px solid #777;
+            padding: 0 0 0 180px;
+            min-width: 680px;
+        }
+        ul {
+            list-style-type: square;
+        }
+        ul.resource {
+            font: normal 14px/26px georgia, serif;
+        }
+        .math {
+            margin: 0 30%;
+        }
+        pre {
+            font-size: 12px;
+            line-height: 1.3em;
+        }
+        .syntaxhighlighter { 
+            font-size: 12px !important;
+            overflow-y: hidden !important;
+            overflow-x: auto !important;
+        }
+        .syntaxhighlighter .line { 
+            line-height: 1.3em !important;
+        }
+        .syntaxhighlighter .line.alt1 { 
+            background-color: #f2f2f2 !important;
+        }
+        #title {
+            float: left;
+            padding-top: 30px;
+        }
+        #demo {
+            float: left;
+            height: 130px;
+            padding-top: 24px;
+        }
+        #copy {
+            border-top: 1px dotted #ccc;
+            font-size: 0.75em;
+            font-style: italic;
+            text-align: center;
+            margin: 40px 0 0;
+        }
+        #nav {
+            display: block;
+            margin: 5px 10px 0;
+            width: 100px;
+        }
+        #nav ul {
+            list-style: none;
+            padding: 0;
+            position: relative;
+            left: 40px;
+        }
+        #nav li {
+            display: list-item;
+        }
+        #nav li a {
+            display: block;
+            padding: 5px;
+            text-transform: lowercase;
+        }
+        #nav li a:hover {
+            border-bottom: 1px dotted #ccc;
+        }
+        .stick {
+            position: absolute;
+            top: 160px;
+        }
+        #content {
+            margin: 5px 10px 0 180px;
+            position: relative;
+            display: block;
+            min-width: 400px;
+            color: #333;
+            font: normal 16px/32px georgia, serif;
+            max-width: 720px;
+        }
+        #progress {
+            left: 20px;
+            top: 26px;
+            position: absolute;
+        }
+        #pg1, #pg2 {
+            -moz-border-bottom-colors: none;
+            -moz-border-left-colors: none;
+            -moz-border-right-colors: none;
+            -moz-border-top-colors: none;
+            border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #811;
+            border-image: none;
+            border-style: solid;
+            border-width: 5px;
+            top: 0;
+            position: absolute;
+        }
+        #pg1 {
+            left: 0;
+        }
+        #pg2 {
+            left: 7px;
+        }
+        .center {
+          margin: 15px auto;
+          text-align: center;;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div id="title">
+            <h1>Blob Family</h1>
+            <p><em>A family of physically-based blobs</em></p>
+        </div>
+
+        <div id="demo">
+            <canvas id="BlobFamily" data-processing-sources="js/BlobFamily.pde" width="400" height="154">
+                <p>Your browser does not support the canvas tag.</p>
+                <!-- Note: you can put any alternative content here. -->
+            </canvas>
+            <noscript>
+                <p>JavaScript is required to view the contents of this page.</p>
+            </noscript>
+        </div>
+
+        <div style="clear:both;"></div>
+    </header>
+
+    <div id="nav" class="stick">
+        <ul>
+            <li><a href="#intro">Top</a></li>
+            <li><a href="#massspring">Mass Spring</a></li>
+            <li><a href="#verlet">Verlet</a></li>
+            <li><a href="#constraint">Constraints</a></li>
+            <li><a href="#physic">Physics</a></li>
+            <li><a href="#render">Rendering</a></li>
+            <li><a href="#result">Results</a></li>
+            <li><a href="https://github.com/slsdo/blob-family">Code</a></li>
+            <li><a href="https://slsdo.github.io/steering-behaviors/">Home</a></li>
+        </ul>
+        <div id="progress">
+        <div id="pg1"></div>
+        <div id="pg2"></div>
+        </div>
+    </div>
+
+    <div id="content">
+        <section id="intro">
+            <p>Physically-based simulation is becoming increasingly important in both animation and game production, the use of physically-based gameplay provides a wonderful means for players to immerse themselves within a game, and games such as <em><a href="http://www.chroniclogic.com/gish.htm">Gish</a></em> and <em><a href="http://www.jp.playstation.com/scej/title/locoroco/">LocoRoco</a></em> base their entire gameplay around a 2D blob (<em>Gish</em>'s source code has been <a href="https://github.com/blinry/gish">open sourced</a>, for those brave enough to <a href="http://blog.poweredbytoast.com/gish-source">dive in</a>).
+
+            <p>Articles on blob simulation is surprisingly sparse on the Web, looking over related papers and discussions on <a href="https://en.wikipedia.org/wiki/Soft_body_dynamics">soft body dynamics</a>, a mass-spring system utilizing Verlet integration and constraints is the most popular choice. A successful (and happy) blob implemented with a mass-spring system requires a combination of several complimentary techniques:</p>
+
+            <ul>
+                <li>Mass-spring system modeling point mass as particles with semi-rigid constraints</li>
+                <li>Use Verlet integration to update particle position based on accumulated forces</li>
+                <li>A simple collision handling engine</li>
+                <li>Rendering engine that can turn the point masses into a blobby object</li>
+            </ul>
+
+            <p>Blob Family simulates a group of blobs generated through physical simulation. The program is created in <a href="http://processing.org/">Processing</a>, but the code can easily be ported to JavaScript. A downloadable version of the simulation is available at the bottom of this page.</p>
+        </section>
+
+        <section id="massspring">
+            <h2><span class="hash">#</span> Mass Spring System</h2>
+
+            <p>If you think about it, a blob is really just a type of very viscous fluid, so one may try to implement some kind of fluid simulation with constraints. However, fluid simulation can be quite difficult to get right and is computationally demanding, all we really want is the appearance of a fluid-looking, deformable object. Under most circumstances, a simpler (and sometimes less realistic) system can be used as long as it creates believable simulation.</p>
+
+            <p>In a mass-spring system, we model the blob as a system of point masses (particles) connected by a series of springs in the shape of a blob.</p>
+
+            <div class="center"><img src="img/massspring_blob.png" /></div>
+
+            <p>A point mass is an object with properties such as mass, position, and force. During simulation, the program iterates through each particle, accumulates all forces currently acting on the particle, applies the total force to that particle's position using Verlet integration, and finally computes constraints to stabilize the overall system.</p>
+
+            <p>During the force accumulating stage, all forces currently acting on the particle are added up, including environmental forces like gravity, player stimulated movements, and last but not least, spring forces from neighboring particles. Since particles in our system are connected to each other through springs, the springs will compress and stretch, causing the entire system to wobble around like a blob would. Depending on the spring's elasticity, the blob can be made to appear bouncy or slippery, or even as a rigid body.</p>
+
+            <p>Since the particles are connected by spring, the connections obey <a href="https://en.wikipedia.org/wiki/Hooke's_law">Hooke's law of elasticity</a>:</p>
+
+            <p class="math">
+                <em><strong>F</strong> = k * &Delta;<strong>x</strong></em>
+            </p>
+
+            <p>Where <em>&Delta;<strong>x</strong></em> is the distance between spring length and rest length, and <em>k</em> is the spring elasticity (stiffness). For <em><strong>x</strong> &lt; <strong>x</strong><sub>rest</sub></em>, the spring wants to extend, for <em><strong>x</strong> > <strong>x</strong><sub>rest</sub></em>, the spring wants to contract.</p>
+
+            <p>According to Hooke's law, the force needed to extend or compress a spring back to its rest length is the distance between its current length and its rest length, multiplied by spring elasticity.</p>
+
+            <p>Putting it all together, we arrive at the force accumulation code.</p>
+
+            <pre class="brush: P5; toolbar: false;">
+// For each particle
+force.set(0.0, 0.0); // Reset force
+
+// Apply gravity if enabled
+if (enable_gravity) force += gravity * mass;
+
+// Keyboard input
+if (keys[UP]) force += Vector(0.0, -60.0);
+if (keys[LEFT]) force += Vector(-60.0, 0.0);
+if (keys[DOWN]) force += Vector(0.0, 60.0);
+if (keys[RIGHT]) force += Vector(60.0, 0.0);
+
+// Gather forces from all connected constraints for all particles
+for (int i = 0; i &lt; num_of_links; j++) {
+    // Obeys Hook's law: f = k * (x - x0)
+    // Vector from neighbor to self
+    Vector it2me = pos - neighbor_pos;
+    // Vector from neighbor to rest position, MID is length of spring at rest
+    Vector it2mid = neighbor_pos + it2me.normalize() * MID;
+    // Vector from current postition to rest position
+    Vector me2mid = it2mid - pos;
+    // Apply spring force
+    force += me2mid * kspring;
+}
+            </pre>
+
+            <h3><span class="plus">+</span>  Resources</h3>
+            <ul class="resource">
+                <li><a href="http://cowboyprogramming.com/2007/01/05/blob-physics/">Cowboy Programming - Blob Physics</a></li>
+                <li><a href="http://www.gotoandplay.it/_articles/2005/08/advCharPhysics.php">Thomas Jakobsen - Advanced Character Physics</a></li>
+                <li><a href="http://dev.opera.com/articles/view/blob-sallad-canvas-tag-and-javascrip/">Blob Sallad - canvas tag and JavaScript physics simulation experiment</a></li>
+                <li><a href="http://blog.wolfire.com/2010/06/Early-Gish-hacking">Wolfire Games Blog - Early Gish hacking</a></li>
+                <li><a href="http://panoramix.ift.uni.wroc.pl/~MAQ/soft2d/index.php">Maciej Matyka - How To Implement a Pressure Soft Body Model</a></li>
+                <li><a href="http://www.openprocessing.org/sketch/55481">OpenProcessing - Blob</a></li>
+            </ul>
+        </section>
+
+        <section id="verlet">
+            <h2><span class="hash">#</span> Verlet Integration</h2>
+
+            <p>Now that we have a springs-based particle system, we need to use it to simulate a blob. The <a href="https://en.wikipedia.org/wiki/Euler_method">Euler method</a> is the typical approach people tend to take when simulating movement. Euler integration calculates a particle's movement through time based on its current position, velocity and acceleration:</p>
+
+            <p class="math">
+                <em><strong>x<sub>t+1</sub></strong> = <strong>x<sub>t</sub></strong> + <strong>v<sub>t</sub></strong> * &Delta;t</em><br />
+                <em><strong>v<sub>t+1</sub></strong> = <strong>v<sub>t</sub></strong> + <strong>a<sub>t</sub></strong> * &Delta;t</em>
+            </p>
+
+            <p>You have probably seen the above equations in one form or another, as they are the standard Newtonian equations of motion. This is called Forward (explicit) Euler integration. Complex physical simulation using the Forward Euler method is very unstable. Since position and velocity are extrapolated based on current rate of change, they can overshoot, resulting in a point mass moving past its maximum or minimum physical limit and blasting the system to the moon (and back).</p>
+
+            <p>Unlike Euler integration, <a href="https://en.wikipedia.org/wiki/Verlet_integration">Verlet integration</a> is a velocity-less method that integrates the equation of motion using a particle's current position and previous position:</p>
+
+            <p class="math">
+                <em><strong>x<sub>t+1</sub></strong> = <strong>x<sub>t</sub></strong> + (<strong>x<sub>t</sub></strong> - <strong>x<sub>t-1</sub></strong>) + <strong>a</strong> * &Delta;t * &Delta;t</em>
+            </p>
+
+            <p>Compared to Euler's method, Verlet integration is more stable and accurate when simulating multiple objects with constraints. Since a particle's movement is defined by its position rather than velocity (the velocity is implicitly defined by the current and previous position), when a point moves past its physical limitation, you can simply move it back to its previous position. Overall, Verlet integration is quite fast, and serves as a reasonably stable method for our blob.</p>
+
+            <pre class="brush: P5; toolbar: false;">
+// Verlet integration
+void integrateVerlet(float t) {
+  Vector temp = pos; // Cache current position
+  pos += (pos - pos0) + force/mass * t * t // Verlet integration, t = timestep
+  pos0 = temp; // Save current position for next iteration
+}
+            </pre>
+
+            <p>In practice, Verlet integration is only a second-order numerical technique (Euler is a first-order method) that gives you an approximation of the particle's position, for higher accuracy, look into the fourth-order <a href="https://en.wikipedia.org/wiki/Runge%E2%80%93Kutta_methods">Runge-Kutta</a> (RK4) method.</p>
+
+            <p>Also, for accurate results Verlet integration requires constant acceleration and time step, there is a time-corrected Verlet integration method that scales a particle's movement by the ratio of time step for current and last frame. With the time step fixed, the standard Verlet method should be able to handle changing acceleration better than the Euler method. In game development, some people prefer to have fixed time step instead to ensure accuracy, so it's a trade-off between frame rate and accuracy.</p>
+
+            <h3><span class="plus">+</span> Resources</h3>
+            <ul class="resource">
+                <li><a href="http://lolengine.net/blog/2011/12/14/understanding-motion-in-games">Lol Engine - Understanding basic motion calculations in games: Euler vs. Verlet</a></li>
+                <li><a href="http://codeflow.org/entries/2010/aug/28/integration-by-example-euler-vs-verlet-vs-runge-kutta/">Integration by Example - Euler vs Verlet vs Runge-Kutta</a></li>
+                <li><a href="http://archive.gamedev.net/archive/reference/programming/features/verlet/">GameDev.net - A Simple Time-Corrected Verlet Integration Method </a></li>
+                <li><a href="http://bluethen.com/wordpress/index.php/processing-app/updated-cloth-simulator-and-how-to-improve-your-verlet-cloth-simulator/">BlueThen - Updated Curtain and How to Improve Your Verlet Cloth Simulator</a></li>
+                <li><a href="http://gafferongames.com/game-physics/fix-your-timestep/">gafferongames - FIX YOUR TIMESTEP!</a></li>
+            </ul>
+        </section>
+
+        <section id="constraint">
+            <h2><span class="hash">#</span> Constrained Dynamics</h2>
+
+            <p>As mentioned earlier, sometimes Verlet integration can be inaccurate, this is where constraint comes in. Constrained particle dynamics is used to ensure our system is stable by limiting the particles' movement so that they obey the laws of physics. For example, we may need to constrain the movement of two particles connected by a spring when they move too far apart or in an unexpected direction beyond the spring's support.</p>
+
+            <div class="center"><img src="img/constraint_particle.png" /></div>
+
+            <p>Normally, calculating constraint forces for a complex system can be quite strenuous. Luckily, applying constraints in a Verlet system is very straightforward due to the fact the particle's previous position is saved. When the particle moves past the maximum length of the spring, we simply move it back to a position within the constrained length without calculating the resulting velocity.</p>
+
+            <pre class="brush: P5; toolbar: false;">
+// Vector from neighbor position to self position
+Vector it2me = p1.pos - p1.pos;
+// Current length of spring
+float length = it2me.magnitude();
+// Check if length is within min/max limit
+if (length &lt; MIN || length > MAX) {
+    // Apply constraint
+    if (length &lt; MIN) length = MIN;
+    if (length > MAX) length = MAX;
+    // Scale vector to to constraint length
+    it2me = it2me.normalize() * length;
+    // Find midpoint between particle and its neighbor
+    Vector midpt = (p1.pos + p2.pos) / 2.0;
+    // Apply constraint to particle and its neighbor by
+    // moving them towards or away from each other
+    p1.pos = midpt + (it2me / 2.0);
+    p2.pos = midpt - (it2me / 2.0);
+}
+            </pre>
+
+            <p>The above code processes semi-rigid constraint for spring connections. For a rigid constraint, instead of keeping the distance between two particles to a minimum or maximum length, just set it to a single length.</p>
+
+            <p>Even with constraints, a system can become unstable and collapse. One reason may be that as you satisfy constraints for one part of the system, another part becomes unstable, which then causes yet another part to become unstable, creating a ripple effect throughout the system. Also, since our spring constraint only measures absolute distance between particles, if a particle moves too far to the other side of its neighbor, the constraint will keep it on the "wrong" side. As a result, instead of staying in the shape of a ball, the particle system collapses in on itself.</p>
+
+            <div class="center"><img src="img/constraint_blob.png" /></div>
+
+            <p>One quick and dirty way to fix this problem is to create some more spring constraints around the blob. A better approach is to use a method called <em>relaxation</em>, where the constraint function is run multiple times so that it eventually converge to a stable solution. Of course, the greater the number of iterations, the more your simulation's performance suffers, so you will need to play around with the system to find the optimal number of iterations.</p>
+
+            <p>Keep in mind that you should calculate forces acting on all particles first, then move all of them, and finally handle all constraints. When a particle moves, the extra force it distributes to its neighbor will be different from the original force its neighbor is supposed to take in. The problem is amplified when you apply the constraint before movig on to the next particle, causing a large ripple effect that will destabilize the system, which will wobble around in the absence of external forces.</p>
+
+            <p>One strange behavior worth mentioning is that even with a very tight (or rigid) constraint, a system would deform if it is pushed up against the edge of the world. Not so rigid! The cause was the order in which constraints and collisions were processed: A part of the collision function checks if a particle is outside the world boundary, if it is, the particle is projected back into the world. The fact that this is done after satisfying constraints meant particle position can be still be outside of their constraint. The lesson? Make sure the constraints are properly applied!</p>
+
+            <pre class="brush: P5; toolbar: false;">
+// Calculate them separately!
+for (int i = 0; i &lt; num_of_particles; i++) {
+    AccumulateForces(particle[i]);
+}   
+for (int i = 0; i &lt; num_of_particles; i++) {
+    VerletIntegration(particle[i]);
+}
+// Relaxation loop
+for (int j = 0; j &lt; relax_iteration; j++) {
+    for (int i = 0; i &lt; num_of_constraints; i++) {
+        SatisfyConstraints(constraints[i]);
+    }
+}
+            </pre>
+
+            <h3><span class="plus">+</span> Resources</h3>
+            <ul class="resource">
+                <li><a href="http://cowboyprogramming.com/2007/01/05/blob-physics/">Cowboy Programming - Blob Physics</a></li>
+                <li><a href="http://web.archive.org/web/20051124122133/http://www.teknikus.dk/tj/gdc2001.htm">Thomas Jakobsen - Advanced Character Physics</a></li>
+                <li><a href="http://bluethen.com/wordpress/index.php/processing-app/curtain/">BlueThen - Curtain and How To Build a Fabric Simulator</a></li>
+                <li><a href="https://www.cs.cmu.edu/~baraff/pbm/constraints.pdf">Andrew Witkin - An Introduction to Physically Based Modeling: Constrained Dynamics</a></li>
+            </ul>
+        </section>
+
+        <section id="physic">
+            <h2><span class="hash">#</span> Physically Based</h2>
+
+            <p>A very simple collision detection method is used here: If a particle moves out of the world bounding box, we use the direction it was moving towards as well as its force to calculate a new direction parallel to the border (adjusted by a friction coefficient).</p>
+
+            <p>Within a Verlet system, the previous position is readily available to make all of this extremely simple. Sometimes the particle may get stuck outside of the bounding box, in which case the particle is simply moved back just inside the bounding box border.</p>
+
+            <p>With the collision system in place, we now move our attention to the blob itself. A blob is made up of a system of spring-connected particles, the appearance and behavior of the blob depends heavily on the internal structure of the springs and particles. Within a system, differences in spring length and elasticity, as well as particle size, can result in vastly difference blobs. Different constructions have their own strengths and weaknesses. Getting a specific blob system to behave just right often takes a lot of trial and error. Below are some of the more commonly used builds that serve as a solid starting point.</p>
+
+            <div class="center"><img src="img/physic_single.png" /></div>
+
+            <p>A single-skinned blob: A circle of particles were each particle is joined to its left and right neighbors, as well as to a particle in the center. This is a straightforward structure to implement and allows reasonable performance. However, the simplicity of its structure also gives rise to several problems: The single-layered skin can easily get caught and fold over each other. Depending on the stiffness of the spring, the entire blob can sometimes collapse in on itself.</p>
+
+            <div class="center"><img src="img/physic_double.png" /></div>
+
+            <p>A double-skinned blob: Discussed in-depth in <a href="http://cowboyprogramming.com/2007/01/05/blob-physics/">this article</a>, this is created with two interconnected layers of particles with one particle in the center. It is more stable than the single-skinned blob and can produce very realistic movements. Due to its more complex structure, more time is needed to tweak the spring constraints to get things to behave "just right." Also, performance takes a hit due to the added complexity, and a large blob can slow the simulation down to a crawl.</p>
+
+            <div class="center"><img src="img/physic_tar.png" /></div>
+
+            <p>An interconnected blob: Unlike the skinned blobs, it has no center point mass. To make up for the lack of an internal support, each particle is connected to its neighbors as well as its opposing particle (the game <em>Gish</em> uses a similar method). The additional springs result in a stable structure that is unlikely to collapse on itself.</p>
+
+            <h3><span class="plus">+</span> Resources</h3>
+            <ul class="resource">
+                <li><a href="http://www.gamedev.net/page/resources/_/technical/math-and-physics/a-verlet-based-approach-for-2d-game-physics-r2714">GameDev.net - A Verlet based approach for 2D game physics</a></li>
+                <li><a href="http://www.metanetsoftware.com/technique/tutorialA.html">N Tutorial A - Collision Detection and Response</a></li>
+                <li><a href="http://cowboyprogramming.com/2007/01/05/blob-physics/">Cowboy Programming - Blob Physics</a></li>
+                <li><a href="http://blog.wolfire.com/2010/06/Early-Gish-hacking">Wolfire Games Blog - Early Gish hacking</a></li>
+            </ul>
+        </section>
+
+        <section id="render">
+            <h2><span class="hash">#</span> Rendering</h2>
+
+            <p>With a solid mass-spring structure in hand, we use metaballs to render the actual blob. In computer graphics, metaballs are organic-looking circular objects that blend into closeby metaballs to form a gooey, blobby-looking entity.</p>
+
+            <div class="center"><img src="img/render_blob.png" /></div>
+
+            <p>Mathematically, metaballs are defined by a function that calculates a value for a given pixel based on its distance relative to all other metaballs on the screen. Pixels in between two metaballs is "colored" by both, thus creating the effect where the two metaballs are "melting" into each other. The metaball equation is as follows:</p>
+
+            <p class="math">
+                <em>P(x, y) = R / sqrt((x - x<sub>0</sub>)<sup>2</sup> + (y-y<sub>0</sub>)<sup>2</sup>)</em>
+            </p>
+
+            <p>Where <em>R</em> is the metaball radius, (<em>x</em>, <em>y</em>) and (<em>x<sub>0</sub></em>, <em>y<sub>0</sub></em>) are coordinates of the current pixel and the metaball, and <em>P(x, y)</em> is the resulting color. Just by looking at the equation, we see that if the pixel is located at the center of the metaball, then <em>x = x<sub>0</sub></em> and <em>y = y<sub>0</sub></em>, the denominator goes to 0, and <em>P(x, y)</em> goes to infinity (or, in our case, the pixel ends up being black). As we move further away, the denominator becomes smaller, giving us lighter pixel colors.</p>
+
+            <div class="center"><img src="img/render_dist.png" /></div>
+
+            <p>The basic algorithm to render a blob is then:</p>
+
+            <ol>
+                <li>Iterate through every on-screen pixel</li>
+                <li>For each pixel, iterate through every particle</li>
+                <li>Use the metaball equation to calculate the pixel's color</li>
+            </ol>
+
+            <p>Only one problem left... notice there is a square root in our metaball function. Square roots tend to be computationally expensive, especially when the operation is done for every single pixel! There are many ways to optimize the algorithm, for our system we will use two simple tricks to achieve big speed boosts.</p>
+
+            <p>First, notices how only a small portion of the pixels on-screen are needed to render the metaballs. Instead of iterating through every single pixel, bounding boxes are put around each blob. During rendering, only pixels within those bounding boxes are computed. The second optimization is to eliminate the square root entirely. By doing so, we need to change the numerator part of the equation to compensate for the larger denominator.</p>
+
+            <p>Combining the above two optimizations, the rendering algorithm then becomes:</p>
+
+            <ol>
+                <li>Calculate metaball bounding boxes and cache the pixel coordinates</li>
+                <li>Iterate through every cached pixel</li>
+                <li>For each pixel, iterate through every particle</li>
+                <li>Calculate the pixel's color using the function: <em>P(x, y) = (R * metaball_size) / [(x - x<sub>0</sub>)<sup>2</sup> + (y-y<sub>0</sub>)<sup>2</sup>]</em></li>
+            </ol>
+
+            <pre class="brush: P5; toolbar: false;">
+// Iterate through each cached pixel
+for (each pixel in cache) {
+    float sum = 0.0;
+    // Iterate through all particles
+    for (each p in particles) {
+        // Calculate pixel value using modified metaball equation
+        sum += p.radius*metaball_size / (sq(p.pos.x - x) + sq(p.pos.y - y));
+    }
+    // If resulting sum is greater than a pre-defined threshold, render the pixel as metaball
+    if (sum > metaball_band) {
+        pixels[index] = color(sum);
+    }
+}
+            </pre>
+
+            <h3><span class="plus">+</span> Resources</h3>
+            <ul class="resource">
+                <li><a href="http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/exploring-metaballs-and-isosurfaces-in-2d-r2556">GameDev.net - Exploring Metaballs and Isosurfaces in 2D</a></li>
+                <li><a href="http://www.geisswerks.com/ryan/BLOBS/blobs.html">Ryan Geiss - Metaballs (also known as: Blobs)</a></li>
+                <li><a href="http://www.niksula.hut.fi/~hkankaan/Homepages/metaballs.html">Hannu's Plaza - Metaball math</a></li>
+                <li><a href="https://processing.org/discourse/beta/num_1270296593.html">Processing - Optimization metaball effect</a></li>
+            </ul>
+        </section>
+
+        <section id="result">
+            <h2><span class="hash">#</span> Results</h2>
+
+            <div class="center"><img src="img/result_blobfamily.png" /></div>
+
+            <div class="center" style="font-size:1.2em; font-weight:bold;">Download Blob Family v1.0.0: [ <a href="etc/blob_v1.0.0_win32.zip">Win32</a> ] [ <a href="etc/blob_v1.0.0_win64.zip">Win64</a> ]</div>
+
+            <p>This is a simple blob simulation that incorporates some of the popular techniques found in games and physics engines. For more in-depth discussions of topics such as Verlet Integration and Metaballs, follow the reference links found at the end of in each section. There are many more ways to improve the realism and performance of the simulation, the materials found here should serve as a good starting point for aspiring blob adventurers!</p>
+        </section>
+
+        <div id="copy">&copy; 2014 slsdo</div>
+    </div>
+
+    <script type="text/javascript">
+        // Highlight code
+        SyntaxHighlighter.all();
+
+        $(document).ready(function() {
+            $('.stick').stickySidebar();
+        });
+
+        $(document).ready(function() {
+            $('#progress').progressBar();
+        });
+
+        // convenience function to get the id attribute of generated sketch html element
+        function getProcessingSketchId () { return 'BlobFamily'; }
+
+        var handler;
+        var renderCanvas = false;
+        var renderElement = BlobFamily;
+        // Init render flag
+
+        handler = elementVisibilityMayChange();
+        // Determine if content is in viewport
+        function isElementInViewport (el) {
+            var rect = el.getBoundingClientRect();
+
+            return (rect.bottom >= 0 && rect.right >= 0);
+        }
+        // Action taken
+        function elementVisibilityMayChange () {
+            return function () {
+                if ( !isElementInViewport(renderElement) ) {
+                    renderCanvas = false;
+                }
+                else renderCanvas = true;
+            }
+        }
+        //jQuery
+        $(window).on('DOMContentLoaded load resize scroll', handler);
+    </script>
+</body>
+</html>
